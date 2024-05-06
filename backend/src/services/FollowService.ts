@@ -16,17 +16,14 @@ export default new (class FollowService {
   async follow(req: Request, res: Response): Promise<Response> {
     try {
       const followingId = req.params.followingId;
-
       if (!isValidUUID(followingId)) {
-        return res.status(400).json({ message: "Invalid UUID" });
+        return res.status(400).json({ message: "invalid uuid" });
       }
 
       const userId = res.locals.loginSession.User.id;
 
       if (followingId == userId)
-        return res
-          .status(400)
-          .json({ message: "You cant follow your self, LOL!" });
+        return res.status(400).json({ message: "you cant follow your self" });
 
       const followingUser = await this.UserRepository.findUnique({
         where: {

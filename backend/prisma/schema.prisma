@@ -15,24 +15,21 @@ datasource db {
 
 // user Model
 model User {
-  id              String   @id @default(uuid())
-  username        String   @unique
+  id              String    @id @default(uuid())
+  username        String    @unique
   fullname        String
-  email           String   @unique
+  email           String    @unique
   password        String
   profile_picture String
   bio             String
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  created_at      DateTime? @default(now())
+  updated_at      DateTime? @updatedAt
   likes           Like[]
   threads         Thread[]
   replies         Reply[]
-  follower        Follow[] @relation(name: "Following")
-  following       Follow[] @relation(name: "Follower")
+  followers       Follow[]  @relation(name: "Following")
+  following       Follow[]  @relation(name: "Follower")
 }
-
-// following = orang yg difollow
-// follower = kita
 
 model Follow {
   id          String   @id @default(uuid())
@@ -45,25 +42,25 @@ model Follow {
 }
 
 model Thread {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   content    String
   image      String[]
-  created_at DateTime @default(now())
-  Like       Like[]
+  created_at DateTime? @default(now())
+  likes      Like[]
   replies    Reply[]
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    String
-  isLiked    Boolean? @default(false)
+  isLiked    Boolean?  @default(false)
 }
 
 model Reply {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   content    String
   image      String?
-  created_at DateTime @default(now())
-  Thread     Thread   @relation(fields: [thread_id], references: [id], onDelete: Cascade)
+  created_at DateTime? @default(now())
+  Thread     Thread    @relation(fields: [thread_id], references: [id], onDelete: Cascade)
   thread_id  String
-  User       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  User       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    String
 }
 
@@ -74,7 +71,3 @@ model Like {
   thread    Thread @relation(fields: [thread_id], references: [id], onDelete: Cascade)
   thread_id String
 }
-
-// UUID adlaah sebauh string yang berisi secaraka angka dan huruf, jadi ketika menggunakan UUID hasilnya tidak akan sama dengan yang lain
-// fbc27dd4-f90a-480f-a526-e49492978ee3
-// b654c9f0-1504-4478-b7c0-07cbd25187aa

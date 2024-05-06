@@ -19,7 +19,7 @@ export default new (class LikeService {
       const threadId = req.params.threadId;
 
       if (!isValidUUID(threadId)) {
-        return res.status(400).json({ message: "Invalid UUID" });
+        return res.status(400).json({ message: "invalid UUID" });
       }
 
       const userId = res.locals.loginSession.User.id;
@@ -31,20 +31,20 @@ export default new (class LikeService {
       });
 
       if (!userSelected)
-        return res.status(404).json({ message: "User no found" });
+        return res.status(404).json({ message: "user no found" });
 
       const threadSelected = await this.ThreadRepository.findUnique({
         where: {
           id: threadId,
         },
         include: {
-          Like: true,
+          likes: true,
         },
       });
       if (!threadSelected)
-        return res.status(404).json({ message: "Thread no found" });
+        return res.status(404).json({ message: "thread no found" });
 
-      const exitingLike = threadSelected.Like.find(
+      const exitingLike = threadSelected.likes.find(
         (like) => like.user_id === userId
       );
 
@@ -64,8 +64,7 @@ export default new (class LikeService {
 
         return res.status(200).json({
           code: 200,
-          status: "Success",
-          message: "Undo Like Thread Success",
+          message: "undo like thread success",
         });
       }
 
@@ -85,8 +84,7 @@ export default new (class LikeService {
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Like Thread Success",
+        message: "like thread success",
         data: likeThread,
       });
     } catch (error) {

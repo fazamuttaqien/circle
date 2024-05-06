@@ -5,15 +5,11 @@ import { v4 as uuidv4 } from "uuid";
 import * as bcyrpt from "bcrypt";
 import cloudinary from "../config";
 import * as fs from "fs";
+import isValidUUID from "../utils/UUIDUtils";
+import { DEFAULT_EXPIRATION, redis } from "../cache/client";
+import { UserNameRedis, UserRedis } from "../interface";
 
 const prisma = new PrismaClient();
-
-function isValidUUID(uuid: string): boolean {
-  const UUIDRegex =
-    /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
-  // const UUIDRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{3}-[a-f0-9]{3}-[a-f0-9]{12}$/i
-  return UUIDRegex.test(uuid);
-}
 
 export default new (class UserService {
   private readonly UserRepository = prisma.user;
@@ -22,113 +18,335 @@ export default new (class UserService {
   private readonly ReplyRepository = prisma.reply;
   private readonly UserFollowingRepository = prisma.follow;
 
+  // with redis
   async findAll(req: Request, res: Response): Promise<Response> {
     try {
-      // this is to retrieve the page the thread was opened on, if it is the first time it has been opened it will automatically retrieve page 1
       const page = parseInt(req.params.page) || 1;
-      // this is to retrieve how many threads are on the page
-      // page 1 contains 10 threads, page 2 contains 10 threads, page 3 contains 10 threads
       const pageSize = 10;
-
-      // this will check the pageSize
-      //            (1-1) * 10 = 0
       const skip = (page - 1) * pageSize;
 
-      const users = await this.UserRepository.findMany({
+      const cache_key = `users_page_${page}`;
+      if (!cache_key) return res.status(404).json({ message: "key not found" });
+
+      const cache_data = await redis.get(cache_key);
+      if (cache_data) {
+        const users_redis = JSON.parse(cache_data);
+        const users_pg = await this.UserRepository.findMany({
+          skip,
+          take: pageSize,
+        });
+
+        const totalUsers = await this.UserRepository.count();
+        const totalPages = Math.ceil(totalUsers / pageSize);
+
+        if (
+          users_redis.data.length === users_pg.length &&
+          users_redis.pagination.total_users === totalUsers &&
+          users_redis.pagination.total_pages === totalPages
+        ) {
+          return res.status(200).json({
+            code: 200,
+            message: "find all cache user success",
+            data: users_redis,
+          });
+        } else {
+          await redis.del(cache_key);
+        }
+      }
+
+      const users_pg = await this.UserRepository.findMany({
         skip,
         take: pageSize,
       });
 
-      // calculating the total number of users in the database (for pagination)
-      const totalUsers = await this.UserRepository.count();
+      const total_users = await this.UserRepository.count();
+      const total_pages = Math.ceil(total_users / pageSize);
 
-      // calculate the number of pages based on the total number of users
-      const totalPages = Math.ceil(totalUsers / pageSize);
-      // const totalPages = Math.floor(totalUsers / pageSize)
-
-      if (page > totalPages)
+      if (page > total_pages)
         return res.status(404).json({ message: "page not found" });
-      // when a user inputs pages that exceed the available page capacity
-      // the system will issue an error that the page does not exist
 
-      const userss = {
-        users,
+      const data_users = {
+        data: users_pg,
         pagination: {
-          totalUsers,
-          totalPages,
+          total_users,
+          total_pages,
           currentPage: page,
           pageSize,
         },
       };
 
+      await redis.setEx(
+        cache_key,
+        DEFAULT_EXPIRATION,
+        JSON.stringify({
+          data: data_users.data,
+          pagination: data_users.pagination,
+        })
+      );
+
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Find All User Success",
-        data: userss,
+        message: "find all users success",
+        data: data_users,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
 
+  // with redis
   async findByID(req: Request, res: Response): Promise<Response> {
     try {
       const userId = req.params.userId;
-
       if (!isValidUUID(userId)) {
         return res.status(400).json({ message: "Invalid UUID" });
       }
 
-      const users = await this.UserRepository.findUnique({
+      const cache_key = `user_id`;
+      if (!cache_key) return res.status(404).json({ message: "key not found" });
+
+      let users_data: UserRedis[] = [];
+
+      const cache = await redis.get(cache_key);
+      if (cache) {
+        users_data = JSON.parse(cache);
+        const users_pg = await this.UserRepository.findUniqueOrThrow({
+          where: {
+            id: userId,
+          },
+          select: {
+            id: true,
+            username: true,
+            fullname: true,
+            email: true,
+            profile_picture: true,
+            bio: true,
+            threads: {
+              select: {
+                id: true,
+                content: true,
+                image: true,
+                user_id: true,
+                isLiked: true,
+              },
+            },
+            likes: {
+              select: {
+                id: true,
+                user_id: true,
+                thread_id: true,
+              },
+            },
+            replies: {
+              select: {
+                id: true,
+                content: true,
+                image: true,
+                user_id: true,
+                thread_id: true,
+              },
+            },
+            following: {
+              select: {
+                id: true,
+                followingId: true,
+                isFollow: true,
+              },
+            },
+            followers: {
+              select: {
+                id: true,
+                followerId: true,
+                isFollow: true,
+              },
+            },
+          },
+        });
+
+        // check if the user already exists in the redis
+        const existingUserIndex = Array.from(users_data).findIndex(
+          (users) => users.id === userId
+        );
+        if (existingUserIndex !== -1 && users_pg !== null) {
+          // if user already exists, update it
+          users_data[existingUserIndex] = users_pg;
+        } else {
+          // if user doesn't exist, add it
+          Array.from(users_data).push(users_pg);
+        }
+        await redis.setEx(
+          cache_key,
+          DEFAULT_EXPIRATION,
+          JSON.stringify(users_data)
+        );
+        if (users_data[existingUserIndex]) {
+          return res.status(200).json({
+            code: 200,
+            message: "find by id cache threads success",
+            data: users_data[existingUserIndex],
+          });
+        }
+      }
+
+      const users = await this.UserRepository.findUniqueOrThrow({
         where: {
           id: userId,
         },
-        include: {
-          threads: true,
-          likes: true,
-          replies: true,
-          following: true,
-          follower: true,
+        select: {
+          id: true,
+          username: true,
+          fullname: true,
+          email: true,
+          profile_picture: true,
+          bio: true,
+          threads: {
+            select: {
+              id: true,
+              content: true,
+              image: true,
+              user_id: true,
+              isLiked: true,
+            },
+          },
+          likes: {
+            select: {
+              id: true,
+              user_id: true,
+              thread_id: true,
+            },
+          },
+          replies: {
+            select: {
+              id: true,
+              content: true,
+              image: true,
+              user_id: true,
+              thread_id: true,
+            },
+          },
+          following: {
+            select: {
+              id: true,
+              followingId: true,
+              isFollow: true,
+            },
+          },
+          followers: {
+            select: {
+              id: true,
+              followerId: true,
+              isFollow: true,
+            },
+          },
         },
       });
 
-      if (!users) return res.status(404).json({ message: "User not found" });
+      if (!users) return res.status(404).json({ message: "user not found" });
+
+      users_data.push(users);
+      await redis.setEx(
+        cache_key,
+        DEFAULT_EXPIRATION,
+        JSON.stringify(users_data)
+      );
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Find By ID User Success",
+        message: "find by id user success",
         data: users,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
 
+  // with redis
   async findByName(req: Request, res: Response): Promise<Response> {
     try {
       const name = req.params.name;
-      console.log(name);
+
+      const cache_key = `user_name`;
+      if (!cache_key) return res.status(404).json({ message: "key not found" });
+
+      let users_data: UserNameRedis[] = [];
+
+      const cache = await redis.get(cache_key);
+      if (cache) {
+        users_data = JSON.parse(cache);
+        const users_pg = await this.UserRepository.findMany({
+          where: {
+            fullname: name,
+          },
+          select: {
+            id: true,
+            username: true,
+            fullname: true,
+            email: true,
+            profile_picture: true,
+            bio: true,
+            created_at: true,
+            updated_at: true,
+          },
+        });
+
+        // check if the user already exists in the redis
+        const existingUserIndex = Array.from(users_data).findIndex(
+          (users) => users.fullname === name
+        );
+        if (existingUserIndex !== -1 && users_pg !== null) {
+          // if user already exists, update it
+          users_data[existingUserIndex] = users_pg[0];
+        } else {
+          // if user doesn't exist, add it
+          Array.from(users_data).push(users_pg[0]);
+        }
+        await redis.setEx(
+          cache_key,
+          DEFAULT_EXPIRATION,
+          JSON.stringify(users_data)
+        );
+        if (users_data[existingUserIndex]) {
+          return res.status(200).json({
+            code: 200,
+            message: "find by name cache threads success",
+            data: users_data[existingUserIndex],
+          });
+        }
+      }
 
       const user = await this.UserRepository.findMany({
         where: {
           fullname: name,
         },
+        select: {
+          id: true,
+          username: true,
+          fullname: true,
+          email: true,
+          profile_picture: true,
+          bio: true,
+          created_at: true,
+          updated_at: true,
+        },
       });
+      if (!user) return res.status(404).json({ message: "user not found" });
 
-      if (!user) return res.status(404).json({ message: "User not found" });
+      users_data.push(user[0]);
+      await redis.setEx(
+        cache_key,
+        DEFAULT_EXPIRATION,
+        JSON.stringify(users_data)
+      );
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Find By Name User Success",
+        message: "find by name user success",
         data: user,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }

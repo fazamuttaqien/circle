@@ -20,7 +20,7 @@ export default new (class AuthService {
         where: { email: body.email },
       });
       if (isMailRegisted > 0)
-        return res.status(400).json({ message: "Email already registed!" });
+        return res.status(400).json({ message: "email already registed!" });
 
       const hashPassword = await bcyrpt.hash(body.password, 10);
 
@@ -45,8 +45,7 @@ export default new (class AuthService {
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Register Success",
+        message: "register success",
         data: Auth,
       });
     } catch (error) {
@@ -65,14 +64,14 @@ export default new (class AuthService {
         where: { email: body.email },
       });
       if (!isMailRegisted)
-        return res.status(409).json({ message: "Email isnt Registed!" });
+        return res.status(409).json({ message: "email isn't registed!" });
 
       const isMatchPassword = await bcyrpt.compare(
         value.password,
         isMailRegisted.password
       );
       if (!isMatchPassword)
-        return res.status(409).json({ message: "Incorect Password!" });
+        return res.status(409).json({ message: "incorect password!" });
 
       const User = {
         id: isMailRegisted.id,
@@ -87,8 +86,7 @@ export default new (class AuthService {
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Login Success",
+        message: "login success",
         token,
       });
     } catch (error) {
@@ -105,12 +103,11 @@ export default new (class AuthService {
         },
       });
 
-      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user) return res.status(404).json({ message: "user not found" });
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "User have Token",
+        message: "user have token",
       });
     } catch (error) {
       console.log(error);

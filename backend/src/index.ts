@@ -2,7 +2,7 @@ import cors from "cors";
 import express from "express";
 import * as dotenv from "dotenv";
 import router from "./routes/router";
-import { redisConnect } from "./cache/redis";
+import { redisconnect } from "./cache/client";
 
 const app = express();
 app.use(express.json());
@@ -23,6 +23,6 @@ app.use(cors(corsOption));
 app.use("/api/circle", router);
 
 app.listen(process.env.PORT, () => {
-  redisConnect();
+  redisconnect();
   console.log(`Server running in PORT : ${process.env.PORT}`);
 });
