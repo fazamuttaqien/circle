@@ -11,14 +11,8 @@ import {
   Image,
 } from "@chakra-ui/react";
 import moment from "moment";
-// import Swal from "sweetalert2";
 import { Link, useParams } from "react-router-dom";
 import { BsArrowLeft } from "react-icons/bs";
-// import { useAppSelector } from "@/redux/store";
-// import { BiCommentDetail } from "react-icons/bi";
-// import { RiDeleteBin5Line } from "react-icons/ri";
-// import ThreadForm from "@threads/components/ThreadForm";
-// import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useDetailThread } from "../hooks/useThreadsData";
 import ReplyForm from "./ReplyForm";
 import ReplyItem from "./ReplyItem";

@@ -1,4 +1,4 @@
-import Profile from "../features/profile/components/Profile";
+import Profile from "@/features/profile/components/Profile";
 import { Fragment } from "react";
 
 function ProfilePage() {

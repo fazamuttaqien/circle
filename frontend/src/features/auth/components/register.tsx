@@ -14,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { useRegister } from "../../../features/auth/hooks/useRegister";
+import { useRegister } from "../hooks/useRegister";
 
 export default function Register() {
   const [show, setShow] = useState<boolean>(false);

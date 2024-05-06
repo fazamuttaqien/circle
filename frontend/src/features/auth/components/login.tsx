@@ -17,7 +17,7 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { useLogin } from "../../../features/auth/hooks/useLogin";
+import { useLogin } from "../hooks/useLogin";
 
 export default function Login() {
   const [show, setShow] = useState<boolean>(false);

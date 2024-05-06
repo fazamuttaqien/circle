@@ -13,9 +13,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { useAppDispacth, useAppSelectore } from "../redux/store";
-import { getProfile } from "../redux/user/profileSlice";
 import { FiEdit3 } from "react-icons/fi";
+import { useAppDispacth, useAppSelectore } from "@/redux/store";
+import { getProfile } from "@/redux/user/profileSlice";
 
 export default function Profile() {
   const dispatch = useAppDispacth();
@@ -97,7 +97,7 @@ export default function Profile() {
                   </Text>
                   <Flex mt={"10px"} gap={3}>
                     <Box fontSize={"md"}>
-                      {profileData?.follower.length}{" "}
+                      {profileData?.followers.length}{" "}
                       <Text display={"inline"} color={"gray.400"}>
                         Followers
                       </Text>

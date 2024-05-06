@@ -1,5 +1,5 @@
-import { API } from "../../../utils/api";
-import getError from "../../../utils/getError";
+import { API } from "@/utils/api";
+import getError from "@/utils/getError";
 import { useState, ChangeEvent } from "react";
 import { toast } from "react-toastify";
 

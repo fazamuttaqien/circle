@@ -8,10 +8,10 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast, ToastContainer } from "react-toastify";
-import getError from "./utils/getError";
-import Router from "./routers/router";
-import store from "./redux/store";
 import { Provider } from "react-redux";
+import getError from "./utils/getError";
+import store from "./redux/store";
+import Router from "./routers/router";
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({

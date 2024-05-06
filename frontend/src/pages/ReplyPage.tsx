@@ -1,4 +1,4 @@
-import Reply from "../features/threads/components/Reply";
+import Reply from "@/features/threads/components/Reply";
 import { Fragment } from "react";
 
 function ReplyPage() {

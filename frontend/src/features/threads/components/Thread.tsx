@@ -13,16 +13,16 @@ import {
 import moment from "moment";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
-import { useAppSelectore } from "../../../redux/store";
 import { BiCommentDetail } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import ThreadForm from "../../threads/components/ThreadForm";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import {
-  useInfinityThreads,
   useDeleteThread,
+  useInfinityThreads,
   usePostLike,
 } from "../hooks/useThreadsData";
+import { useAppSelectore } from "@/redux/store";
+import ThreadForm from "./ThreadForm";
 
 export default function Thread() {
   const {

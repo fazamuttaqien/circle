@@ -15,9 +15,9 @@ import {
 
 import { BsFillArrowRightSquareFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import SidebarDrawer from "../components/SidebarDrawer";
-import Sidebar from "../components/Sidebar";
-import Widget from "../components/Widget";
+import Sidebar from "@/components/Sidebar";
+import Widget from "@/components/Widget";
+import SidebarDrawer from "@/components/SidebarDrawer";
 
 export default function Main({ children }: { children: ReactNode }) {
   // children is a special parameter in React to handle every component in React

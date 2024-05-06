@@ -1,3 +1,5 @@
+import { API } from "@/utils/api";
+import getError from "@/utils/getError";
 import {
   useQuery,
   useMutation,
@@ -5,8 +7,7 @@ import {
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { API } from "../../../utils/api";
-import getError from "../../../utils/getError";
+
 const token = localStorage.getItem("token");
 
 //  fecth infinite threads

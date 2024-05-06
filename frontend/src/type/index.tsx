@@ -11,7 +11,7 @@ interface Login {
 
 interface FollowType {
   id: string;
-  follower: FillFollower;
+  followers: FillFollower;
   following: FillFollower;
 }
 
@@ -32,7 +32,7 @@ interface UserProfileType {
   bio: string;
   created_at: string;
   updated_at: string;
-  follower: FollowType[];
+  followers: FollowType[];
   following: FollowType[];
 }
 
@@ -116,19 +116,3 @@ interface ThreadReplyType {
     profile_picture: string;
   };
 }
-
-// export type {
-//   ThreadHomeType,
-//   ThreadLikeType,
-//   ThreadReplyType,
-//   EditProfileType,
-//   ReplyPostType,
-//   ThreadPostType,
-//   SearchUserType,
-//   Suggested,
-//   UserProfileType,
-//   FollowType,
-//   FillFollower,
-//   Login,
-//   Register,
-// };

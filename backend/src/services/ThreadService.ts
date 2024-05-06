@@ -15,9 +15,11 @@ export default new (class ThreadService {
 
   async findAllRedis(req: Request, res: Response): Promise<Response> {
     try {
-      const page = parseInt(req.params.page) || 1;
-      const page_size = 10;
-      const skip = (page - 1) * page_size;
+      const { page = 1, page_size = 10 } = req.query;
+      const parsed_page = parseInt(page as string, 10);
+      const parsed_page_size = parseInt(page_size as string, 10);
+
+      const skip = (parsed_page - 1) * parsed_page_size;
 
       const cache_key = `threads_page_${page}`;
       if (!cache_key) return res.status(404).json({ message: "key not found" });
@@ -28,7 +30,7 @@ export default new (class ThreadService {
 
         const threads_pg = await this.ThreadRepository.findMany({
           skip,
-          take: page_size,
+          take: parsed_page_size,
           include: {
             user: true,
             likes: true,
@@ -40,7 +42,7 @@ export default new (class ThreadService {
         });
 
         const total_thread = await this.ThreadRepository.count();
-        const total_pages = Math.ceil(total_thread / page_size);
+        const total_pages = Math.ceil(total_thread / parsed_page_size);
 
         const check_threads: () => boolean = () => {
           threads_pg.forEach((thread, index) => {
@@ -83,7 +85,7 @@ export default new (class ThreadService {
       // retrieving data from the database
       const threads_pg = await this.ThreadRepository.findMany({
         skip,
-        take: page_size,
+        take: parsed_page_size,
         include: {
           user: true,
           likes: true,
@@ -95,10 +97,10 @@ export default new (class ThreadService {
       });
 
       const total_thread = await this.ThreadRepository.count();
-      const total_pages = Math.ceil(total_thread / page_size);
+      const total_pages = Math.ceil(total_thread / parsed_page_size);
 
-      if (page > total_pages)
-        return res.status(404).json({ message: "page not found" });
+      // if (page > total_pages)
+      //   return res.status(404).json({ message: "page not found" });
 
       const data_threads = {
         data: threads_pg,
@@ -106,7 +108,7 @@ export default new (class ThreadService {
           total_thread,
           total_pages,
           current_page: page,
-          page_size,
+          parsed_page_size,
         },
       };
 
@@ -132,13 +134,15 @@ export default new (class ThreadService {
 
   async findAll(req: Request, res: Response): Promise<Response> {
     try {
-      const page = parseInt(req.params.page) || 1;
-      const page_size = 10;
-      const skip = (page - 1) * page_size;
+      const { page = 1, page_size = 10 } = req.query;
+      const parsed_page = parseInt(page as string, 10);
+      const parsed_page_size = parseInt(page_size as string, 10);
+
+      const skip = (parsed_page - 1) * parsed_page_size;
 
       const threads_pg = await this.ThreadRepository.findMany({
         skip,
-        take: page_size,
+        take: parsed_page_size,
         include: {
           user: true,
           likes: true,
@@ -150,11 +154,10 @@ export default new (class ThreadService {
       });
 
       const total_thread = await this.ThreadRepository.count();
+      const total_pages = Math.ceil(total_thread / parsed_page_size);
 
-      const total_pages = Math.ceil(total_thread / page_size);
-
-      if (page > total_pages)
-        return res.status(404).json({ message: "page not found" });
+      // if (parsedPage > total_pages)
+      //   return res.status(404).json({ message: "page not found" });
 
       const data_threads = {
         data: threads_pg,
@@ -162,7 +165,7 @@ export default new (class ThreadService {
           total_thread,
           total_pages,
           current_page: page,
-          page_size,
+          parsed_page_size,
         },
       };
 
@@ -177,7 +180,6 @@ export default new (class ThreadService {
     }
   }
 
-  // with redis
   async findByID(req: Request, res: Response): Promise<Response> {
     try {
       const thread_id = req.params.threadId;

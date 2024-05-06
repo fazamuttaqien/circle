@@ -1,8 +1,8 @@
+import { useAppSelectore } from "@/redux/store";
+import { API } from "@/utils/api";
+import getError from "@/utils/getError";
 import { useState, ChangeEvent, useEffect } from "react";
-import { API } from "../../../utils/api";
 import { toast } from "react-toastify";
-import getError from "../../../utils/getError";
-import { useAppSelectore } from "../../../redux/store";
 
 export function useEditProfile() {
   const profile = useAppSelectore((state) => state.profile);

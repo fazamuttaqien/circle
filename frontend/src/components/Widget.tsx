@@ -1,8 +1,8 @@
 import { Box } from "@chakra-ui/react";
 import { Fragment } from "react";
-import Watermark from "../components/Watermark";
-import Profile from "./Profile";
 import Suggested from "./Suggested";
+import Watermark from "./Watermark";
+import Profile from "./Profile";
 
 export default function Widget() {
   return (

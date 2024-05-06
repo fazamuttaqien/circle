@@ -1,4 +1,4 @@
-import EditProfile from "../features/editprofile/components/EditProfile";
+import EditProfile from "@/features/editprofile/components/EditProfile";
 import { Fragment } from "react";
 
 function EditProfilePage() {

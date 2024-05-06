@@ -1,4 +1,4 @@
-import Search from "../features/search/components/search";
+import Search from "@/features/search/components/search";
 import { Fragment } from "react/jsx-runtime";
 
 function SearchPage() {

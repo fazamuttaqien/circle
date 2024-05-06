@@ -13,8 +13,8 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { useAppDispacth, useAppSelectore } from "../redux/store";
-import { getSuggested } from "../redux/user/suggestedSlice";
+import { useAppDispacth, useAppSelectore } from "@/redux/store";
+import { getSuggested } from "@/redux/user/suggestedSlice";
 
 export default function Suggested() {
   const dispatch = useAppDispacth();

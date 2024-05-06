@@ -3,9 +3,6 @@
 
 // An example is a loudspeaker which functions to convey information globally,
 // so everyone in the application can receive the information without having to be in the same room
-
-import { API } from "../../utils/api";
-import getError from "../../utils/getError";
 import { PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 
 // this payload action is a type of Redux toolkit which by default carries a payload.
@@ -13,6 +10,9 @@ import { PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { createSlice } from "@reduxjs/toolkit";
 // this is to create a slice in redux. Its function is to divide code so that it is easy to manage.
+
+import { API } from "@/utils/api";
+import getError from "@/utils/getError";
 
 type initialStateT = {
   data: UserProfileType | null;

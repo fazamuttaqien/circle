@@ -1,11 +1,7 @@
 import {
   Button,
   ButtonSpinner,
-  // FormControl,
-  // Grid,
-  // GridItem,
   Input,
-  // Textarea,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,7 +16,6 @@ import {
 import { Fragment, useState } from "react";
 import { RiImageAddFill } from "react-icons/ri";
 import { usePostReply } from "../hooks/useThreadsData";
-// import { useAppSelector } from "@/redux/store";
 
 export default function ReplyForm({ threadId }: { threadId: string }) {
   // const { data: profileData } = useAppSelector((state) => state.profile);

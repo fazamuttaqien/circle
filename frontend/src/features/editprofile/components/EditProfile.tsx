@@ -1,3 +1,4 @@
+import { useAppDispacth, useAppSelectore } from "@/redux/store";
 import {
   Alert,
   AlertDescription,
@@ -12,10 +13,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Fragment, useEffect } from "react";
-import { useEditProfile } from "../hooks/useEditProfile";
 import { useNavigate } from "react-router-dom";
-import { useAppDispacth, useAppSelectore } from "../../../redux/store";
-import { getProfile } from "../../../redux/user/profileSlice";
+import { useEditProfile } from "../hooks/useEditProfile";
+import { getProfile } from "@/redux/user/profileSlice";
 
 export default function EditProfile() {
   const profile = useAppSelectore((state) => state.profile);

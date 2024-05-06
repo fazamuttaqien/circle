@@ -1,4 +1,4 @@
-import Register from "../features/auth/components/register";
+import Register from "@/features/auth/components/register";
 import { Fragment } from "react";
 
 function RegisterPage() {

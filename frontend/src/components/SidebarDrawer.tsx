@@ -3,9 +3,6 @@ import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
-import { useAppSelectore } from "../redux/store";
-import { API } from "../utils/api";
-import getError from "../utils/getError";
 import { jwtDecode } from "jwt-decode";
 
 import { ImSearch } from "react-icons/im";
@@ -18,6 +15,9 @@ import { FaUserAlt } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
 
 import { RiDeleteBin5Fill } from "react-icons/ri";
+import { useAppSelectore } from "@/redux/store";
+import getError from "@/utils/getError";
+import { API } from "@/utils/api";
 
 interface SidebarDrawerInterface {
   closeDrawer: () => void;

@@ -19,7 +19,6 @@ import {
 import { Fragment, useState } from "react";
 import { RiImageAddFill } from "react-icons/ri";
 import { usePostThread } from "../hooks/useThreadsData";
-// import { useAppSelector } from "@/redux/store";
 
 export default function ThreadForm() {
   // const { data: profileData } = useAppSelector((state) => state.profile);

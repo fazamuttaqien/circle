@@ -1,4 +1,4 @@
-import { API } from "../../../utils/api";
+import { API } from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 const token = localStorage.getItem("token");
 

@@ -18,7 +18,6 @@ export default new (class UserService {
   private readonly ReplyRepository = prisma.reply;
   private readonly UserFollowingRepository = prisma.follow;
 
-  // with redis
   async findAll(req: Request, res: Response): Promise<Response> {
     try {
       const page = parseInt(req.params.page) || 1;
@@ -95,7 +94,6 @@ export default new (class UserService {
     }
   }
 
-  // with redis
   async findByID(req: Request, res: Response): Promise<Response> {
     try {
       const userId = req.params.userId;
@@ -262,7 +260,6 @@ export default new (class UserService {
     }
   }
 
-  // with redis
   async findByName(req: Request, res: Response): Promise<Response> {
     try {
       const name = req.params.name;

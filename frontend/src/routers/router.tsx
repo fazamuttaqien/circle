@@ -1,15 +1,15 @@
 import { useEffect, useState, ReactNode } from "react";
 import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import { Flex, Spinner } from "@chakra-ui/react";
-import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
-import HomePage from "../pages/HomePage";
-import { API } from "../utils/api";
-import Main from "../layout/Main";
-import SearchPage from "../pages/SearchPage";
-import ProfilePage from "../pages/ProfilePage";
-import EditProfilePage from "../pages/EditProfilePage";
-import ReplyPage from "../pages/ReplyPage";
+import { API } from "@/utils/api";
+import Main from "@/layout/Main";
+import HomePage from "@/pages/HomePage";
+import ReplyPage from "@/pages/ReplyPage";
+import SearchPage from "@/pages/SearchPage";
+import ProfilePage from "@/pages/ProfilePage";
+import EditProfilePage from "@/pages/EditProfilePage";
+import RegisterPage from "@/pages/RegisterPage";
+import LoginPage from "@/pages/LoginPage";
 
 function Router() {
   // menandakan proses pengecekan sedang dijalankan

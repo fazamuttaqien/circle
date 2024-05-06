@@ -1,7 +1,7 @@
+import { API } from "@/utils/api";
+import getError from "@/utils/getError";
 import { PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { API } from "../../utils/api";
-import getError from "../../utils/getError";
 
 type initialStateT = {
   data: UserProfileType | null;

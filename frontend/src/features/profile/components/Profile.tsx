@@ -1,8 +1,8 @@
-import { useAppDispacth, useAppSelectore } from "../../../redux/store";
-import { getDetailUser } from "../../../redux/user/detailUserSlice";
-import { getProfile } from "../../../redux/user/profileSlice";
-import { API } from "../../../utils/api";
-import getError from "../../../utils/getError";
+import { useAppDispacth, useAppSelectore } from "@/redux/store";
+import { getDetailUser } from "@/redux/user/detailUserSlice";
+import { getProfile } from "@/redux/user/profileSlice";
+import { API } from "@/utils/api";
+import getError from "@/utils/getError";
 import {
   Alert,
   AlertDescription,
@@ -140,7 +140,7 @@ export default function Profile() {
                             right={"0px"}
                             onClick={followAndUnfollow}
                           >
-                            {detailUser?.follower
+                            {detailUser?.followers
                               .map((follower) => follower.id)
                               .includes(profile?.id || "")
                               ? "Unfollow"
@@ -160,7 +160,7 @@ export default function Profile() {
                     </Text>
                     <Flex mt={"10px"} gap={3} mb={5}>
                       <Box fontSize={"md"}>
-                        {detailUser?.follower.length}{" "}
+                        {detailUser?.followers.length}{" "}
                         <Text display={"inline"} color={"gray.400"}>
                           Followers
                         </Text>
@@ -181,66 +181,68 @@ export default function Profile() {
                       <TabPanels>
                         <TabPanel>
                           <Box bg={"#2b2b2b"} px={5} py={3}>
-                            {!detailUser?.follower.length ? (
+                            {!detailUser?.followers.length ? (
                               <Text fontSize={"md"}>No Follower Found</Text>
                             ) : (
                               <>
-                                {detailUser?.follower.map((follower, index) => (
-                                  <Flex
-                                    key={index}
-                                    justifyContent={"space-between"}
-                                    alignItems={"center"}
-                                    my={4}
-                                    display={{ base: "block", sm: "flex" }}
-                                  >
+                                {detailUser?.followers.map(
+                                  (follower, index) => (
                                     <Flex
-                                      gap={2}
+                                      key={index}
+                                      justifyContent={"space-between"}
                                       alignItems={"center"}
-                                      mb={{ base: 3, sm: 0 }}
+                                      my={4}
+                                      display={{ base: "block", sm: "flex" }}
                                     >
-                                      <Text>
-                                        <Image
-                                          borderRadius="full"
-                                          boxSize="45px"
-                                          objectFit="cover"
-                                          src={
-                                            follower.follower.profile_picture
-                                          }
-                                          alt={follower.follower.fullname}
-                                        />
-                                      </Text>
-                                      <Box>
-                                        <Text fontSize={"sm"}>
-                                          {follower.follower.fullname}
-                                        </Text>
-                                        <Text
-                                          fontSize={"sm"}
-                                          color={"gray.400"}
-                                        >
-                                          @{follower.follower.username}
-                                        </Text>
-                                      </Box>
-                                    </Flex>
-                                    <Text>
-                                      <Link
-                                        to={`/profile/${follower.follower.id}`}
+                                      <Flex
+                                        gap={2}
+                                        alignItems={"center"}
+                                        mb={{ base: 3, sm: 0 }}
                                       >
-                                        <Button
-                                          color={"white"}
-                                          _hover={{
-                                            bg: "#38a169",
-                                            borderColor: "#38a169",
-                                          }}
-                                          size="sm"
-                                          borderRadius={"full"}
-                                          variant="outline"
+                                        <Text>
+                                          <Image
+                                            borderRadius="full"
+                                            boxSize="45px"
+                                            objectFit="cover"
+                                            src={
+                                              follower.followers.profile_picture
+                                            }
+                                            alt={follower.followers.fullname}
+                                          />
+                                        </Text>
+                                        <Box>
+                                          <Text fontSize={"sm"}>
+                                            {follower.followers.fullname}
+                                          </Text>
+                                          <Text
+                                            fontSize={"sm"}
+                                            color={"gray.400"}
+                                          >
+                                            @{follower.followers.username}
+                                          </Text>
+                                        </Box>
+                                      </Flex>
+                                      <Text>
+                                        <Link
+                                          to={`/profile/${follower.followers.id}`}
                                         >
-                                          Visit Profile
-                                        </Button>
-                                      </Link>
-                                    </Text>
-                                  </Flex>
-                                ))}
+                                          <Button
+                                            color={"white"}
+                                            _hover={{
+                                              bg: "#38a169",
+                                              borderColor: "#38a169",
+                                            }}
+                                            size="sm"
+                                            borderRadius={"full"}
+                                            variant="outline"
+                                          >
+                                            Visit Profile
+                                          </Button>
+                                        </Link>
+                                      </Text>
+                                    </Flex>
+                                  )
+                                )}
                               </>
                             )}
                           </Box>

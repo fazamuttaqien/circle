@@ -17,8 +17,8 @@ import {
 } from "@chakra-ui/react";
 import { RiUserSearchLine } from "react-icons/ri";
 import { ImSearch } from "react-icons/im";
-import { useSearch } from "../hooks/useSearch";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useSearch } from "../hooks/useSearch";
 
 export default function Search() {
   const [queryParams] = useSearchParams();
