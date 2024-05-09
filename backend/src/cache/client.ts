@@ -18,15 +18,10 @@ const redis = createClient({
 });
 
 const redisconnect = async () => {
-  await redis
-    .connect()
-    .then(() => {
-      console.log("redis client is ready to use");
-    })
-    .catch((error) => {
-      console.error(error);
-      process.exit(0);
-    });
+  await redis.connect().catch((error) => {
+    console.error(error);
+    process.exit(0);
+  });
 };
 
 export { redis, redisconnect };

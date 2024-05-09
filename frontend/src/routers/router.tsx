@@ -1,5 +1,11 @@
 import { useEffect, useState, ReactNode } from "react";
-import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  BrowserRouter,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import { Flex, Spinner } from "@chakra-ui/react";
 import { API } from "@/utils/api";
 import Main from "@/layout/Main";
@@ -38,18 +44,20 @@ function Router() {
     }
   }, [token]);
 
-  function IsLogin({ children }: { children: ReactNode }) {
+  function IsLogin() {
     if (token) {
-      return <>{children}</>;
+      return <Navigate to={"/"} />;
+    } else {
+      return <Outlet />;
     }
-    return <Navigate to="/login" />;
   }
 
-  function IsNotLogged({ children }: { children: ReactNode }) {
+  function IsNotLogged() {
     if (!token) {
-      return <>{children}</>;
+      return <Navigate to={"/login"} />;
+    } else {
+      return <Outlet />;
     }
-    return <Navigate to="/" />;
   }
 
   return (
@@ -75,104 +83,77 @@ function Router() {
       {!checkAuthFinish && (
         <BrowserRouter>
           <Routes>
-            <Route path="/">
-              <Route
-                index
-                element={
-                  <IsLogin>
+            <Route path="/" element={<IsNotLogged />}>
+              <Route path="/">
+                <Route
+                  index
+                  element={
                     <Main>
                       <HomePage />
                     </Main>
-                  </IsLogin>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/reply/:threadId">
-              <Route
-                index
-                element={
-                  <IsLogin>
+              <Route path="/reply/:threadId">
+                <Route
+                  index
+                  element={
                     <Main>
                       <ReplyPage />
                     </Main>
-                  </IsLogin>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/search">
-              <Route
-                index
-                element={
-                  <IsLogin>
+              <Route path="/search">
+                <Route
+                  index
+                  element={
                     <Main>
                       <SearchPage />
                     </Main>
-                  </IsLogin>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/profile/:userId">
-              <Route
-                index
-                element={
-                  <IsLogin>
+              <Route path="/profile/:userId">
+                <Route
+                  index
+                  element={
                     <Main>
                       <ProfilePage />
                     </Main>
-                  </IsLogin>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/my-profile/:userId">
-              <Route
-                index
-                element={
-                  <IsLogin>
+              <Route path="/profile/:userId">
+                <Route
+                  index
+                  element={
                     <Main>
                       <ProfilePage />
                     </Main>
-                  </IsLogin>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/edit-profile">
-              <Route
-                index
-                element={
-                  <IsLogin>
+              <Route path="/edit-profile">
+                <Route
+                  index
+                  element={
                     <Main>
                       <EditProfilePage />
                     </Main>
-                  </IsLogin>
-                }
-              />
+                  }
+                />
+              </Route>
             </Route>
 
-            <Route path="/register">
-              <Route
-                index
-                element={
-                  <IsNotLogged>
-                    <RegisterPage />
-                  </IsNotLogged>
-                }
-              />
-            </Route>
-
-            <Route path="/login">
-              <Route
-                index
-                element={
-                  <IsNotLogged>
-                    <LoginPage />
-                  </IsNotLogged>
-                }
-              />
+            <Route path="/" element={<IsLogin />}>
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

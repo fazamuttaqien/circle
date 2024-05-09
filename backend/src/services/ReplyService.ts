@@ -15,7 +15,6 @@ export default new (class ReplyService {
   async addReply(req: Request, res: Response): Promise<Response> {
     try {
       const threadId = req.params.threadId;
-
       if (!isValidUUID(threadId)) {
         return res.status(400).json({ error: "invalid UUID" });
       }
@@ -43,29 +42,45 @@ export default new (class ReplyService {
       const { error } = addthread.validate(body);
       if (error) return res.status(400).json({ message: error.message });
 
-      const image = req.file;
-      let image_url = "";
+      const file = req.file as unknown as Express.Multer.File;
+      let image_url: string = "";
 
-      if (!image) {
+      if (!file) {
         image_url = "";
       } else {
-        const cloudinaryUpload = await cloudinary.uploader.upload(image.path, {
+        const result = await cloudinary.uploader.upload(file.path, {
           folder: "circle",
         });
-        image_url = cloudinaryUpload.secure_url;
-        fs.unlinkSync(image.path);
+        image_url = result.secure_url;
+        fs.unlinkSync(file.path);
       }
 
       const newReply = await this.ReplyRepository.create({
         data: {
           content: body.content,
           image: image_url,
-          User: {
+          user: {
             connect: { id: userId },
           },
-          Thread: {
+          thread: {
             connect: { id: threadId },
           },
+        },
+        select: {
+          id: true,
+          content: true,
+          image: true,
+          created_at: true,
+          user: {
+            select: {
+              id: true,
+              fullname: true,
+              username: true,
+              profile_picture: true,
+            },
+          },
+          thread_id: true,
+          user_id: true,
         },
       });
 
@@ -78,11 +93,11 @@ export default new (class ReplyService {
 
       return res.status(200).json({
         code: 200,
-        message: "add replay success",
+        message: "add reply success",
         data: newReply,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -164,7 +179,7 @@ export default new (class ReplyService {
         data: updateReply,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -205,7 +220,7 @@ export default new (class ReplyService {
         data: deleteReply,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }

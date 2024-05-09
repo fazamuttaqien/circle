@@ -10,7 +10,7 @@ import {
 export default function Watermark() {
   return (
     <Fragment>
-      <Card bg={"#3a3a3a"} color={"white"}>
+      <Card bg={"#262626"} color={"white"}>
         <CardBody py={4} px={5}>
           <Box fontSize={"md"}>
             Developed by Cheattos - {""}
@@ -26,7 +26,7 @@ export default function Watermark() {
           <Text fontSize={"xs"} color={"gray.400"}>
             Powered by{" "}
             <Image
-              src="/circle.png"
+              src="https://res.cloudinary.com/dklgstji2/image/upload/v1715162106/circle/gzjhiuhyc0l8vuptbtcr.png"
               alt="Dumbways Logo"
               width={"20px"}
               display={"inline"}

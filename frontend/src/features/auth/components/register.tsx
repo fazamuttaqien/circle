@@ -39,12 +39,19 @@ export default function Register() {
     <Fragment>
       <Flex justifyContent={"center"} alignItems={"center"} height={"100vh"}>
         <Box width={"100%"} maxWidth={"450px"} p={4} color={"white"}>
-          <Heading as="h2" size="3xl" noOfLines={1} color={"green.400"} mb={3}>
+          <Heading
+            as="h2"
+            size="3xl"
+            noOfLines={1}
+            color={"green.400"}
+            mb={3}
+            ml={3}
+          >
             circle
           </Heading>
-          <Text fontSize={"xl"} mb={3}>
+          {/* <Text fontSize={"xl"} mb={3} ml={3}>
             Create account Circle
-          </Text>
+          </Text> */}
           {isError && (
             <Alert status="error" bg={"#FF6969"} mb={3} borderRadius={5}>
               <AlertIcon color={"white"} />
@@ -58,6 +65,7 @@ export default function Register() {
               name="fullname"
               value={form.fullname}
               onChange={handleChange}
+              border={"none"}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -67,6 +75,7 @@ export default function Register() {
               name="email"
               value={form.email}
               onChange={handleChange}
+              border={"none"}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -77,6 +86,7 @@ export default function Register() {
                 value={form.password}
                 type={show ? "text" : "password"}
                 onChange={handleChange}
+                border={"none"}
               />
               <InputRightElement width="4.5rem">
                 <Button h="1.75rem" size="sm" onClick={() => setShow(!show)}>
@@ -88,7 +98,7 @@ export default function Register() {
           {isLoading ? (
             <Button
               isLoading
-              colorScheme="green"
+              colorScheme="#04A51E"
               variant="solid"
               borderRadius={"full"}
               width={"100%"}
@@ -108,8 +118,8 @@ export default function Register() {
               Register
             </Button>
           )}
-          <Text>
-            Already have an account?{" "}
+          <Text ml={3}>
+            Already have an account ?{" "}
             <Link style={{ color: "#48bb78" }} to={"/login"}>
               Login
             </Link>

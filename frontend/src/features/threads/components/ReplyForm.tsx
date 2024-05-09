@@ -18,11 +18,8 @@ import { RiImageAddFill } from "react-icons/ri";
 import { usePostReply } from "../hooks/useThreadsData";
 
 export default function ReplyForm({ threadId }: { threadId: string }) {
-  // const { data: profileData } = useAppSelector((state) => state.profile);
-
   const [content, setContent] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { mutate, isPending } = usePostReply(() => {
@@ -59,22 +56,23 @@ export default function ReplyForm({ threadId }: { threadId: string }) {
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             setContent(event.target.value)
           }
+          border={"none"}
         />
         <Box
           fontSize={"3xl"}
-          color={"#38a169"}
+          color={"#04A51E"}
           cursor={"pointer"}
           onClick={onOpen}
         >
-          <RiImageAddFill />
+          <RiImageAddFill style={{ marginLeft: "10px", marginRight: "10px" }} />
         </Box>
         {isPending ? (
-          <Button px={"70px"} colorScheme="green" borderRadius={"full"}>
+          <Button px={"70px"} colorScheme="#04A51E" borderRadius={"full"}>
             <ButtonSpinner />
           </Button>
         ) : (
           <Button
-            px={"70px"}
+            px={"30px"}
             colorScheme="green"
             borderRadius={"full"}
             onClick={postReply}

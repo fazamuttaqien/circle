@@ -46,7 +46,6 @@ export const getProfile = createAsyncThunk(
 
     try {
       const id = getToken();
-
       const response = await API.get(`users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -12,6 +12,10 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import Swal from "sweetalert2";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { useAppSelectore } from "@/redux/store";
+import { useDeleteReply } from "../hooks/useThreadsData";
 
 interface ReplyItemInterface {
   reply: ThreadReplyType;
@@ -19,10 +23,12 @@ interface ReplyItemInterface {
 
 export default function ReplyItem({ reply }: ReplyItemInterface) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { data: profileData } = useAppSelectore((state) => state.profile);
+  const { mutate: mutateDelete } = useDeleteReply();
 
   return (
     <Fragment>
-      <Flex gap={"15px"} border={"2px solid #3a3a3a"} p={"20px"} my={"15px"}>
+      <Flex gap={"15px"} border={"2px solid #262626"} p={"20px"} my={"15px"}>
         <Image
           borderRadius="full"
           boxSize="40px"
@@ -50,12 +56,13 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
           <Text fontSize={"sm"} wordBreak={"break-word"}>
             {reply?.content}
           </Text>
-          {reply?.image && (
+          {reply?.image !== "" && (
             <Image
               onClick={() => {
                 onOpen();
               }}
               mt={"10px"}
+              mb={"10px"}
               borderRadius="5px"
               boxSize="350px"
               objectFit="cover"
@@ -63,6 +70,36 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
               alt={`${reply?.image} Reply Image`}
               cursor={"pointer"}
             />
+          )}
+          {/* Delete Reply */}
+          {reply?.user?.id === profileData?.id && (
+            <Flex
+              alignItems={"center"}
+              onClick={() => {
+                Swal.fire({
+                  title: "Are you sure?",
+                  text: "This Reply Will Be Deleted Permanently!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Yes, Delete This Reply!",
+                }).then((result: any) => {
+                  if (result.isConfirmed) {
+                    mutateDelete(reply.id);
+                  }
+                });
+              }}
+              cursor={"pointer"}
+            >
+              <RiDeleteBin5Line
+                style={{
+                  fontSize: "20px",
+                  marginRight: "5px",
+                  marginTop: "1px",
+                }}
+              />
+            </Flex>
           )}
         </Box>
       </Flex>

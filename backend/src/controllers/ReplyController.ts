@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import ReplyService from "../services/ReplayService";
+import ReplyService from "../services/ReplyService";
 
 export default new (class ReplyController {
   addReply(req: Request, res: Response) {

@@ -1,12 +1,23 @@
-import { Fragment } from "react";
-import { Box, Flex, Text } from "@chakra-ui/react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Fragment, useEffect } from "react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { BiLogOut } from "react-icons/bi";
 import { BsHouse, BsHouseFill } from "react-icons/bs";
 import { FaCircleUser, FaRegCircleUser } from "react-icons/fa6";
-import { RiUserSearchFill, RiUserSearchLine } from "react-icons/ri";
+import {
+  RiDeleteBin5Fill,
+  RiUserSearchFill,
+  RiUserSearchLine,
+} from "react-icons/ri";
 import { jwtDecode } from "jwt-decode";
+import { API } from "@/utils/api";
+import { toast } from "react-toastify";
+import getError from "@/utils/getError";
+
+interface SidebarDrawerInterface {
+  closeDrawer: () => void;
+}
 
 interface User {
   id: string;
@@ -16,7 +27,7 @@ interface JwtPayload {
   User: User;
 }
 
-export default function Sidebar() {
+export default function Sidebar(props: SidebarDrawerInterface) {
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem("token");
@@ -31,36 +42,37 @@ export default function Sidebar() {
     }
   }
 
-  // const deleteAccount = async () => {
-  //     try {
-  //         await API.delete(`deleteuser/${idToken}`, {
-  //             headers: {
-  //                 Authorization: `Bearer ${token}`,
-  //             },
-  //         });
+  const deleteAccount = async () => {
+    try {
+      await API.delete(`users/${idToken}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  //         localStorage.clear();
-  //         navigate("/login");
-  //     } catch (error) {
-  //         toast.error(getError(error), {
-  //             position: "top-center",
-  //             autoClose: 5000,
-  //             hideProgressBar: false,
-  //             closeOnClick: true,
-  //             pauseOnHover: true,
-  //             draggable: true,
-  //             progress: undefined,
-  //             theme: "colored",
-  //         });
-  //     }
-  // };
+      localStorage.clear();
+      window.location.reload();
+      navigate("/login");
+    } catch (error) {
+      toast.error(getError(error), {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
 
   return (
     <Fragment>
       <Box
         px={50}
         py={10}
-        borderRight={"3px solid #3a3a3a"}
+        borderRight={"3px solid #262626"}
         overflow={"auto"}
         className="hide-scroll"
         color={"white"}
@@ -93,51 +105,51 @@ export default function Sidebar() {
                 </Text>
               </Box>
             </Link>
-            <Link to={`/my-profile/${idToken}`}>
+            <Link to={`/profile/${idToken}`}>
               <Box display={"flex"} alignItems={"center"} gap={3} mb={6}>
                 <Text fontSize={"2xl"}>
-                  {location.pathname.includes("/my-profile") ? (
+                  {location.pathname.includes("/profile") ? (
                     <FaCircleUser />
                   ) : (
                     <FaRegCircleUser />
                   )}
                 </Text>
                 <Text fontSize={"md"} mt={1}>
-                  My Profile
+                  Profile
                 </Text>
               </Box>
             </Link>
-            {/* <Button
-                            onClick={() => {
-                                props.closeDrawer();
-                                Swal.fire({
-                                    title: "Are you sure?",
-                                    text: "Your Account Will Be Removed Permanently!",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonColor: "#3085d6",
-                                    cancelButtonColor: "#d33",
-                                    confirmButtonText: "Yes, Remove My Account!",
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        deleteAccount();
-                                    }
-                                });
-                            }}
-                            display={"flex"}
-                            gap={3}
-                            colorScheme="red"
-                            size={"md"}
-                            width={"220px"}
-                            alignItems={"center"}
-                            justifyContent={"left"}
-                            borderRadius={"full"}
-                        >
-                            <Text fontSize={"2xl"}>
-                                <RiDeleteBin5Fill />
-                            </Text>
-                            <Text fontSize={"md"}>Remove Account</Text>
-                        </Button> */}
+            <Button
+              onClick={() => {
+                props.closeDrawer();
+                Swal.fire({
+                  title: "Are you sure?",
+                  text: "Your Account Will Be Removed Permanently!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Yes, Remove My Account!",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    deleteAccount();
+                  }
+                });
+              }}
+              display={"flex"}
+              gap={3}
+              colorScheme="red"
+              size={"md"}
+              width={"220px"}
+              alignItems={"center"}
+              justifyContent={"left"}
+              borderRadius={"full"}
+            >
+              <Text fontSize={"2xl"}>
+                <RiDeleteBin5Fill />
+              </Text>
+              <Text fontSize={"md"}>Remove Account</Text>
+            </Button>
           </Box>
 
           <Flex alignItems={"center"} gap={3} mb={6}>
@@ -161,6 +173,7 @@ export default function Sidebar() {
                 }).then((result) => {
                   if (result.isConfirmed) {
                     localStorage.clear();
+                    window.location.reload();
                     navigate("/login");
                   }
                 });

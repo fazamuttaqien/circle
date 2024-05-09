@@ -4,6 +4,8 @@ import * as bcyrpt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { register, login } from "../utils/AuthUtil";
+import * as fs from "fs";
+import cloudinary from "../config";
 
 const prisma = new PrismaClient();
 
@@ -31,13 +33,20 @@ export default new (class AuthService {
         "_"
       )}`;
 
+      const file =
+        "https://res.cloudinary.com/dklgstji2/image/upload/v1715134148/circle/as72cdi1attcqypjrk3l.jpg";
+      const result = await cloudinary.uploader.upload(file, {
+        folder: "circle",
+      });
+      const image_url: string = result.secure_url;
+
       const Auth = await this.AuthRepository.create({
         data: {
           username: uconvert,
           fullname: body.fullname,
           email: body.email,
           password: hashPassword,
-          profile_picture: "",
+          profile_picture: image_url,
           bio: "",
           created_at: new Date(),
         },
@@ -49,7 +58,7 @@ export default new (class AuthService {
         data: Auth,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -90,7 +99,7 @@ export default new (class AuthService {
         token,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -110,7 +119,7 @@ export default new (class AuthService {
         message: "user have token",
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json(error);
     }
   }
@@ -125,7 +134,7 @@ export default new (class AuthService {
         message: "Logout Success",
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: "Gagal melakukan logout" });
     }
   }

@@ -30,19 +30,18 @@ export default function Profile() {
   const params = useParams();
   const dispatch = useAppDispacth();
 
+  // taken from redux
   const {
     data: detailUser,
     isLoading,
     isError,
     error,
-  } = useAppSelectore((state) => state.detailUser); //ngambil dari redux
-  const { data: profile } = useAppSelectore((state) => state.profile); //ngambil dari redux
+  } = useAppSelectore((state) => state.detailUser);
+  const { data: profile } = useAppSelectore((state) => state.profile);
 
   useEffect(() => {
     dispatch(getDetailUser(params.userId || ""));
   }, [params]);
-
-  // console.log("Paramater dari profile:", params.userId);
 
   const followAndUnfollow = async () => {
     try {
@@ -71,7 +70,7 @@ export default function Profile() {
   return (
     <Fragment>
       <Box flex={1} px={5} py={10} overflow={"auto"} className="hide-scroll">
-        <Card bg={"#3a3a3a"} color={"white"} mb={"15px"}>
+        <Card bg={"#262626"} color={"white"} mb={"15px"}>
           <CardBody py={4} px={5}>
             <Text fontSize={"2xl"} mb={"10px"}>
               Profile
@@ -98,21 +97,21 @@ export default function Profile() {
                       />
                       <Image
                         borderRadius="full"
-                        bgColor={"#3a3a3a"}
-                        border={"5px solid #3a3a3a"}
+                        bgColor={"#262626"}
+                        border={"5px solid #262626"}
                         boxSize="75px"
                         objectFit="cover"
-                        src={detailUser?.profile_picture}
-                        alt={detailUser?.fullname}
                         position={"absolute"}
                         top={"40px"}
                         left={"20px"}
+                        src={detailUser?.profile_picture}
+                        alt={detailUser?.fullname}
                       />
                       {profile?.id === detailUser?.id && (
                         <Link to={`/edit-profile`}>
                           <Button
                             color={"white"}
-                            _hover={{ bg: "#38a169", borderColor: "#38a169" }}
+                            _hover={{ bg: "", borderColor: "" }}
                             size="sm"
                             borderRadius={"full"}
                             variant="outline"
@@ -131,7 +130,7 @@ export default function Profile() {
                         <>
                           <Button
                             color={"white"}
-                            _hover={{ bg: "#38a169", borderColor: "#38a169" }}
+                            _hover={{ bg: "#04A51E", borderColor: "#04A51E" }}
                             size="sm"
                             borderRadius={"full"}
                             variant="outline"
@@ -140,7 +139,7 @@ export default function Profile() {
                             right={"0px"}
                             onClick={followAndUnfollow}
                           >
-                            {detailUser?.followers
+                            {detailUser?.follower
                               .map((follower) => follower.id)
                               .includes(profile?.id || "")
                               ? "Unfollow"
@@ -160,7 +159,7 @@ export default function Profile() {
                     </Text>
                     <Flex mt={"10px"} gap={3} mb={5}>
                       <Box fontSize={"md"}>
-                        {detailUser?.followers.length}{" "}
+                        {detailUser?.follower.length}{" "}
                         <Text display={"inline"} color={"gray.400"}>
                           Followers
                         </Text>
@@ -180,75 +179,83 @@ export default function Profile() {
                       </TabList>
                       <TabPanels>
                         <TabPanel>
-                          <Box bg={"#2b2b2b"} px={5} py={3}>
-                            {!detailUser?.followers.length ? (
+                          <Box
+                            bg={"#2b2b2b"}
+                            px={5}
+                            py={3}
+                            borderRadius={"10px"}
+                          >
+                            {!detailUser?.follower.length ? (
                               <Text fontSize={"md"}>No Follower Found</Text>
                             ) : (
                               <>
-                                {detailUser?.followers.map(
-                                  (follower, index) => (
+                                {detailUser?.follower.map((follower, index) => (
+                                  <Flex
+                                    key={index}
+                                    justifyContent={"space-between"}
+                                    alignItems={"center"}
+                                    my={4}
+                                    display={{ base: "block", sm: "flex" }}
+                                  >
                                     <Flex
-                                      key={index}
-                                      justifyContent={"space-between"}
+                                      gap={2}
                                       alignItems={"center"}
-                                      my={4}
-                                      display={{ base: "block", sm: "flex" }}
+                                      mb={{ base: 3, sm: 0 }}
                                     >
-                                      <Flex
-                                        gap={2}
-                                        alignItems={"center"}
-                                        mb={{ base: 3, sm: 0 }}
-                                      >
-                                        <Text>
-                                          <Image
-                                            borderRadius="full"
-                                            boxSize="45px"
-                                            objectFit="cover"
-                                            src={
-                                              follower.followers.profile_picture
-                                            }
-                                            alt={follower.followers.fullname}
-                                          />
-                                        </Text>
-                                        <Box>
-                                          <Text fontSize={"sm"}>
-                                            {follower.followers.fullname}
-                                          </Text>
-                                          <Text
-                                            fontSize={"sm"}
-                                            color={"gray.400"}
-                                          >
-                                            @{follower.followers.username}
-                                          </Text>
-                                        </Box>
-                                      </Flex>
                                       <Text>
-                                        <Link
-                                          to={`/profile/${follower.followers.id}`}
-                                        >
-                                          <Button
-                                            color={"white"}
-                                            _hover={{
-                                              bg: "#38a169",
-                                              borderColor: "#38a169",
-                                            }}
-                                            size="sm"
-                                            borderRadius={"full"}
-                                            variant="outline"
-                                          >
-                                            Visit Profile
-                                          </Button>
-                                        </Link>
+                                        <Image
+                                          borderRadius="full"
+                                          boxSize="45px"
+                                          objectFit="cover"
+                                          src={
+                                            follower.follower.profile_picture
+                                          }
+                                          alt={follower.follower.fullname}
+                                        />
                                       </Text>
+                                      <Box>
+                                        <Text fontSize={"sm"}>
+                                          {follower.follower.fullname}
+                                        </Text>
+                                        <Text
+                                          fontSize={"sm"}
+                                          color={"gray.400"}
+                                        >
+                                          @{follower.follower.username}
+                                        </Text>
+                                      </Box>
                                     </Flex>
-                                  )
-                                )}
+                                    <Text>
+                                      <Link
+                                        to={`/profile/${follower.follower.id}`}
+                                      >
+                                        <Button
+                                          color={"white"}
+                                          _hover={{
+                                            bg: "",
+                                            borderColor: "",
+                                          }}
+                                          size="sm"
+                                          borderRadius={"full"}
+                                          variant="outline"
+                                        >
+                                          Profile
+                                        </Button>
+                                      </Link>
+                                    </Text>
+                                  </Flex>
+                                ))}
                               </>
                             )}
                           </Box>
                         </TabPanel>
                         <TabPanel>
-                          <Box bg={"#2b2b2b"} px={5} py={3}>
+                          <Box
+                            bg={"#2b2b2b"}
+                            px={5}
+                            py={3}
+                            borderRadius={"10px"}
+                          >
                             {!detailUser?.following.length ? (
                               <Text fontSize={"md"}>No Following Found</Text>
                             ) : (
@@ -298,14 +305,14 @@ export default function Profile() {
                                           <Button
                                             color={"white"}
                                             _hover={{
-                                              bg: "#38a169",
-                                              borderColor: "#38a169",
+                                              bg: "",
+                                              borderColor: "",
                                             }}
                                             size="sm"
                                             borderRadius={"full"}
                                             variant="outline"
                                           >
-                                            Visit Profile
+                                            Profile
                                           </Button>
                                         </Link>
                                       </Text>

@@ -4,27 +4,27 @@ import getError from "@/utils/getError";
 import { useState, ChangeEvent, useEffect } from "react";
 import { toast } from "react-toastify";
 
-export function useEditProfile() {
+export function userEditProfilePicture() {
   const profile = useAppSelectore((state) => state.profile);
-  const [form, setForm] = useState<EditProfileType>({
-    fullname: "",
-    password: "",
-    bio: "",
+  const [form, setForm] = useState<EditProfilePictureType>({
     image: undefined,
   });
   const [avatar, setAvatar] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [isEditProfileSuccess, setIsEditProfileSuccess] =
+  const [isLoadingProfilePicture, setIsLoadingProfilePicture] =
+    useState<boolean>(false);
+  const [isErrorProfilePicture, setIsErrorProfilePicture] =
+    useState<boolean>(false);
+  const [errorProfilePicture, setErrorProfilePicture] = useState<string>("");
+  const [isEditProfilePictureSuccess, setIsEditProfilePictureSuccess] =
     useState<boolean>(false);
 
   useEffect(() => {
     setForm({
-      fullname: profile.data?.fullname || "",
-      password: "",
-      bio: "",
-      image: undefined,
+      image: stringToFile(
+        profile.data?.profile_picture || "",
+        "image.png",
+        "text/plain"
+      ),
     });
   }, [profile]);
 
@@ -35,12 +35,9 @@ export function useEditProfile() {
     });
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      setForm({
-        image: file,
-      });
       const reader = new FileReader();
       reader.onload = () => {
         const dataURL = reader.result as string;
@@ -58,10 +55,11 @@ export function useEditProfile() {
   const userData = JSON.parse(atob(decodedToken));
   const idUser = userData?.User?.id;
 
-  async function handleEditProfile() {
+  async function handleEditProfilePicture() {
     try {
-      setIsLoading(true);
-      const response = await API.put(`users/${idUser}`, form, {
+      setIsLoadingProfilePicture(true);
+
+      const response = await API.put(`/users/profilepicture/${idUser}`, form, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -78,26 +76,32 @@ export function useEditProfile() {
         progress: undefined,
         theme: "colored",
       });
-      setIsError(false);
-      setError("");
-      setIsEditProfileSuccess(true);
+      setIsErrorProfilePicture(false);
+      setErrorProfilePicture("");
+      setIsEditProfilePictureSuccess(true);
     } catch (error) {
-      setIsError(true);
-      setError(getError(error));
+      setIsErrorProfilePicture(true);
+      setErrorProfilePicture(getError(error));
     } finally {
-      setIsLoading(false);
+      setIsLoadingProfilePicture(false);
     }
   }
 
   return {
     form,
     avatar,
+    isLoadingProfilePicture,
+    isErrorProfilePicture,
+    errorProfilePicture,
+    isEditProfilePictureSuccess,
     handleChange,
-    handleEditProfile,
     handleImageChange,
-    isLoading,
-    isError,
-    error,
-    isEditProfileSuccess,
+    handleEditProfilePicture,
   };
+}
+
+function stringToFile(data: string, filename: string, mimeType: string): File {
+  const blob = new Blob([data], { type: mimeType });
+  const file = new File([blob], filename, { type: mimeType });
+  return file;
 }

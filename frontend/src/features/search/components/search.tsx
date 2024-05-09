@@ -26,7 +26,6 @@ export default function Search() {
   const [nameQuery, setNameQuery] = useState<string>(
     queryParams.get("search") || ""
   );
-  const [goRefetch, setGoRefetch] = useState<boolean>(false);
 
   const {
     isLoading,
@@ -38,33 +37,22 @@ export default function Search() {
 
   useEffect(() => {
     setNameQuery(queryParams.get("search") || "");
-
-    const timeout = setTimeout(() => {
-      setGoRefetch(!goRefetch);
-    }, 100);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [queryParams]);
-
-  useEffect(() => {
     refetch();
-  }, [goRefetch]);
+  }, [queryParams]);
 
   const applyFilter = () => {
     let url = "/search?";
     if (nameQuery) {
-      url += `&search=${nameQuery}`;
+      url += `search=${nameQuery}`;
     }
-
     navigate(url);
+    refetch();
   };
 
   return (
     <Fragment>
       <Box flex={1} px={5} py={10} overflow={"auto"} className="hide-scroll">
-        <Text fontSize={"2xl"} mb={"10px"}>
+        <Text fontSize={"2xl"} mb={"10px"} ml={"15px"}>
           Search User
         </Text>
 
@@ -77,12 +65,14 @@ export default function Search() {
               type="text"
               placeholder="Fullname"
               borderRadius={"full"}
+              border={"none"}
               value={nameQuery}
               onChange={(e) => setNameQuery(e.target.value)}
             />
           </InputGroup>
           <Button
-            colorScheme="green"
+            backgroundColor={"#04A51E"}
+            color={"white"}
             borderRadius={"full"}
             onClick={() => applyFilter()}
           >
@@ -90,7 +80,7 @@ export default function Search() {
           </Button>
         </Flex>
 
-        <Card bg={"#3a3a3a"} color={"white"} mb={"15px"}>
+        <Card bg={"#262626"} color={"white"} mb={"15px"}>
           <CardBody py={2} px={5}>
             {isLoading ? (
               <Spinner />
@@ -103,8 +93,10 @@ export default function Search() {
                   </Alert>
                 ) : (
                   <>
-                    {!users.data.length ? (
-                      <Text fontSize={"lmd"}>No Data Dound</Text>
+                    {users.data.length === 0 ? (
+                      <Text fontSize={"lmd"} borderRadius={"10px"}>
+                        No User Found
+                      </Text>
                     ) : (
                       <>
                         {users.data.map(
@@ -142,14 +134,14 @@ export default function Search() {
                                   <Button
                                     color={"white"}
                                     _hover={{
-                                      bg: "#38a169",
-                                      borderColor: "#38a169",
+                                      bg: "#04A51E",
+                                      borderColor: "#04A51E",
                                     }}
                                     size="sm"
                                     borderRadius={"full"}
                                     variant="outline"
                                   >
-                                    Visit Profile
+                                    Profile
                                   </Button>
                                 </Link>
                               </Text>

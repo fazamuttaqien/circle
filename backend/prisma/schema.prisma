@@ -15,20 +15,20 @@ datasource db {
 
 // user Model
 model User {
-  id              String    @id @default(uuid())
-  username        String    @unique
+  id              String   @id @default(uuid())
+  username        String   @unique
   fullname        String
-  email           String    @unique
+  email           String   @unique
   password        String
   profile_picture String
   bio             String
-  created_at      DateTime? @default(now())
-  updated_at      DateTime? @updatedAt
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
   likes           Like[]
   threads         Thread[]
   replies         Reply[]
-  followers       Follow[]  @relation(name: "Following")
-  following       Follow[]  @relation(name: "Follower")
+  follower        Follow[] @relation(name: "Following")
+  following       Follow[] @relation(name: "Follower")
 }
 
 model Follow {
@@ -42,25 +42,25 @@ model Follow {
 }
 
 model Thread {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   content    String
   image      String[]
-  created_at DateTime? @default(now())
+  created_at DateTime @default(now())
   likes      Like[]
   replies    Reply[]
-  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    String
-  isLiked    Boolean?  @default(false)
+  isLiked    Boolean  @default(false)
 }
 
 model Reply {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   content    String
-  image      String?
-  created_at DateTime? @default(now())
-  Thread     Thread    @relation(fields: [thread_id], references: [id], onDelete: Cascade)
+  image      String
+  created_at DateTime @default(now())
+  thread     Thread   @relation(fields: [thread_id], references: [id], onDelete: Cascade)
   thread_id  String
-  User       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    String
 }
 

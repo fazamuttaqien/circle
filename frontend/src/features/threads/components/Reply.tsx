@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, Key, useRef } from "react";
 import {
   Alert,
   AlertDescription,
@@ -9,6 +9,7 @@ import {
   Spinner,
   Text,
   Image,
+  Stack,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { Link, useParams } from "react-router-dom";
@@ -27,6 +28,8 @@ export default function Reply() {
     error,
   } = useDetailThread(params.threadId || "");
 
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
   return (
     <Fragment>
       <Box flex={1} px={5} py={10} overflow={"auto"} className="hide-scroll">
@@ -39,7 +42,7 @@ export default function Reply() {
           <Text fontSize={"2xl"}>Detail Thread</Text>
         </Flex>
 
-        <Flex gap={"15px"} border={"2px solid #3a3a3a"} p={"20px"} mb={"10px"}>
+        <Flex gap={"15px"} border={"2px solid #262626"} p={"20px"} mb={"10px"}>
           {isLoading ? (
             <Box textAlign={"center"}>
               <Spinner size="xl" />
@@ -57,44 +60,77 @@ export default function Reply() {
                     borderRadius="full"
                     boxSize="40px"
                     objectFit="cover"
-                    src={`${thread?.data?.data.user?.profile_picture}`}
+                    src={`${thread?.data?.user?.profile_picture}`}
                     alt={`Profile Picture`}
                   />
                   <Box>
                     <Flex mb={"5px"}>
                       <Link to={`/profile/${thread?.data?.user?.id}`}>
                         <Text fontWeight={"bold"} me={"10px"}>
-                          {thread?.data?.data.user?.fullname}
+                          {thread?.data?.user?.fullname}
                         </Text>
                       </Link>
                       <Box mt={"2px"} fontSize={"sm"} color={"gray.400"}>
                         <Link to={`/profile/${thread?.data?.user?.id}`}>
-                          @{thread?.data?.data.user?.username}
+                          @{thread?.data?.user?.username}
                         </Link>{" "}
                         -{" "}
                         <Text
                           display={"inline-block"}
-                          title={thread?.data?.data.created_at}
+                          title={thread?.data?.created_at}
                         >
                           {moment(
-                            new Date(thread?.data?.data.created_at)
+                            new Date(thread?.data?.created_at)
                           ).calendar()}
                         </Text>
                       </Box>
                     </Flex>
                     <Text fontSize={"sm"} mb={"10px"} wordBreak={"break-word"}>
-                      {thread?.data?.data.content}
+                      {thread?.data?.content}
                     </Text>
-                    {thread?.data?.data.image && (
+                    {/* {thread?.data?.image.length !== 0 && (
                       <Image
                         borderRadius="5px"
-                        boxSize="550px"
                         objectFit="cover"
-                        src={thread.data.data.image}
-                        alt={`${thread.data.data.image} Thread Image`}
+                        src={thread.data.image}
+                        alt={`${thread.data.image} Thread Image`}
                         mb={"10px"}
                       />
-                    )}
+                    )} */}
+                    {/* Image */}
+                    <Box overflowX="auto" mb={"20px"} borderRadius={"10px"}>
+                      <Stack
+                        ref={imageContainerRef}
+                        spacing={4}
+                        mt={4}
+                        direction="row"
+                        overflowX="auto"
+                      >
+                        {thread?.data?.image.length !== 0 &&
+                          thread?.data?.image.map(
+                            (
+                              images: string | undefined,
+                              index: Key | null | undefined
+                            ) => (
+                              <Box
+                                key={index}
+                                position="relative"
+                                flex="0 0 auto"
+                                minWidth="100px"
+                              >
+                                <Image
+                                  boxSize={"300px"}
+                                  width={"100%"}
+                                  objectFit="cover"
+                                  src={images}
+                                  alt={`${images}@${index}`}
+                                  borderRadius={"10px"}
+                                />
+                              </Box>
+                            )
+                          )}
+                      </Stack>
+                    </Box>
                   </Box>
                 </>
               )}
@@ -102,13 +138,13 @@ export default function Reply() {
           )}
         </Flex>
 
-        <Box border={"2px solid #3a3a3a"} p={"20px"} mb={"10px"}>
+        <Box border={"2px solid #262626"} p={"20px"} mb={"10px"}>
           <ReplyForm threadId={params.threadId || ""} />
         </Box>
 
         {!isLoading && !isError ? (
           <>
-            {thread.data.data.replies.map((reply: ThreadReplyType) => (
+            {thread.data.replies.map((reply: ThreadReplyType) => (
               <ReplyItem key={reply.id} reply={reply} />
             ))}
           </>

@@ -32,10 +32,10 @@ export default function Profile() {
 
   return (
     <Fragment>
-      <Card bg={"#3a3a3a"} color={"white"} mb={"15px"}>
+      <Card bg={"#262626"} color={"white"} mb={"15px"}>
         <CardBody py={4} px={5}>
           <Text fontSize={"xl"} mb={3}>
-            My Profile
+            Profile
           </Text>
           {isLoading ? (
             <Spinner />
@@ -59,8 +59,8 @@ export default function Profile() {
                     />
                     <Image
                       borderRadius="full"
-                      bgColor={"#3a3a3a"}
-                      border={"5px solid #3a3a3a"}
+                      bgColor={"#262626"}
+                      border={"5px solid #262626"}
                       boxSize="75px"
                       objectFit="cover"
                       src={profileData?.profile_picture}
@@ -72,7 +72,7 @@ export default function Profile() {
                     <Link to={`/edit-profile`}>
                       <Button
                         color={"white"}
-                        _hover={{ bg: "#38a169", borderColor: "#38a169" }}
+                        _hover={{ bg: "#04A51E", borderColor: "#04A51E" }}
                         size="sm"
                         borderRadius={"full"}
                         variant="outline"
@@ -97,7 +97,7 @@ export default function Profile() {
                   </Text>
                   <Flex mt={"10px"} gap={3}>
                     <Box fontSize={"md"}>
-                      {profileData?.followers.length}{" "}
+                      {profileData?.follower.length}{" "}
                       <Text display={"inline"} color={"gray.400"}>
                         Followers
                       </Text>

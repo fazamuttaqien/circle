@@ -15,71 +15,102 @@ import {
   ModalOverlay,
   Box,
   useDisclosure,
+  Stack,
+  IconButton,
+  Image,
 } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 import { Fragment, useState } from "react";
 import { RiImageAddFill } from "react-icons/ri";
 import { usePostThread } from "../hooks/useThreadsData";
 
+interface CustomFile extends File {
+  preview: string;
+}
+
 export default function ThreadForm() {
-  // const { data: profileData } = useAppSelector((state) => state.profile);
-
   const [content, setContent] = useState<string>("");
-  const [image, setImage] = useState<File | null>(null);
-
+  // const [image, setImage] = useState<File[] | null>(null);
+  const [image, setImage] = useState<{ file: File; preview: string }[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { mutate, isPending } = usePostThread(() => {
     setContent("");
-    setImage(null); // reset the selected image after posting thread
+    // setImage(null); // reset the selected image after posting thread
+    setImage([]); // reset the selected image after posting thread
   });
+
+  // const postThread = () => {
+  //   const thread: ThreadPostType = {
+  //     content,
+  //   };
+  //   if (image) {
+  //     thread.image = image;
+  //   }
+
+  //   mutate(thread);
+  // };
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = e.target.files;
+  //   if (files && files.length > 0) {
+  //     const filesArray = Array.from(files);
+  //     setImage(filesArray);
+  //   }
+  // };
 
   const postThread = () => {
     const thread: ThreadPostType = {
       content,
+      image: image.map(({ file, preview }) => {
+        const clonedFile: CustomFile = new File([file], file.name, {
+          type: file.type,
+          lastModified: file.lastModified,
+        }) as CustomFile;
+        clonedFile.preview = preview;
+        return clonedFile;
+      }),
     };
-    if (image) {
-      thread.image = image;
-    }
 
     mutate(thread);
   };
 
-  const textareaStyle = {
-    backgroundImage:
-      'url("https://media.istockphoto.com/id/1148387720/photo/background-from-white-paper-texture-bright-exclusive-background-pattern-close-up.webp?b=1&s=170667a&w=0&k=20&c=0N98FwrU05qkxSBOGHvWpl1DKeMEGHnAwUgy9Vqx8zM=")',
-    backgroundSize: "cover", // or other properties to customize the appearance of the image
-    /* additional styling properties */
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      Promise.all(
+        filesArray.map((file) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              resolve({ file, preview: e.target?.result as string });
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+          });
+        })
+      ).then((images) => {
+        setImage(
+          (prevImages: { file: File; preview: string }[]) =>
+            [...prevImages, ...images] as { file: File; preview: string }[]
+        );
+      });
+    }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      setImage(files[0]);
-    }
+  const handleRemoveImage = (index: number) => {
+    setImage((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
   return (
     <Fragment>
       <Grid>
-        {/* berarti ada 5 kolom dengan lebar yang sama, atau 1fr, yang berarti fraksi
-                dari sisa ruang yang tersedia. Jadi, grid akan dibagi menjadi lima kolom yang sama lebarnya. */}
-
-        {/* gap={6}: Properti ini menentukan jarak antara baris dan kolom dalam grid, dalam satuan piksel.
-                 Di sini, gap={6} berarti ada jarak 6 piksel antara setiap baris dan kolom dalam grid. */}
-        {/* <GridItem>
-                    <Avatar
-                        borderRadius="full"
-                        boxSize="40px"
-                        objectFit="cover"
-                        src={profileData?.profile_picture || "none"}
-                    />
-                </GridItem> */}
         <GridItem>
           <FormControl>
             <Textarea
-              style={textareaStyle}
+              border={"none"}
               resize={"none"}
               w="100%"
+              height={"100%"}
               placeholder="Let's post new thread!"
               value={content}
               onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -87,14 +118,42 @@ export default function ThreadForm() {
               }
               id="insertThread"
               borderRadius={"15"}
-              color={"black"}
+              color={"white"}
+              focusBorderColor={"#1D1D1D"}
             />
           </FormControl>
+
+          <Stack direction={["column", "row"]} spacing="24px" overflow={"auto"}>
+            {image.map((images, index) => (
+              <Box key={index} position="relative">
+                <Image
+                  src={images.preview}
+                  alt={`${images.preview}@${index}`}
+                  boxSize="150px"
+                  objectFit="cover"
+                  borderRadius={"lg"}
+                />
+                <IconButton
+                  aria-label="Delete Image"
+                  icon={<CloseIcon />}
+                  onClick={() => handleRemoveImage(index)}
+                  position="absolute"
+                  top="1"
+                  right="1"
+                  zIndex="1"
+                  size={"xs"}
+                  borderRadius={"full"}
+                  colorScheme="blackAlpha"
+                />
+              </Box>
+            ))}
+          </Stack>
+
           <Grid templateColumns="repeat(5, 1fr)" gap={4} mt={4}>
             <GridItem colSpan={2} h="10">
               <Box
                 fontSize={"3xl"}
-                color={"#38a169"}
+                color={"white"}
                 cursor={"pointer"}
                 onClick={onOpen}
               >
@@ -103,14 +162,15 @@ export default function ThreadForm() {
             </GridItem>
             <GridItem colStart={6} colEnd={6} h="10">
               {isPending ? (
-                <Button px={"70px"} colorScheme="green" borderRadius={"full"}>
+                <Button px={"70px"} colorScheme="#04A51E" borderRadius={"full"}>
                   <ButtonSpinner />
                 </Button>
               ) : (
                 <Button
-                  px={"70px"}
-                  colorScheme="green"
+                  px={"30px"}
+                  backgroundColor={"#04A51E"}
                   borderRadius={"full"}
+                  color={"white"}
                   onClick={postThread}
                 >
                   Post
@@ -133,7 +193,13 @@ export default function ThreadForm() {
           <ModalHeader>Upload Image</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Input type="file" name="image" onChange={handleFileChange} />
+            <Input
+              type="file"
+              name="image"
+              accept="image/*"
+              multiple
+              onChange={handleFileChange}
+            />
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" onClick={onClose}>

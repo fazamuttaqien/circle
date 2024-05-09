@@ -175,7 +175,7 @@ export default new (class ThreadService {
         data: data_threads,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -206,6 +206,7 @@ export default new (class ThreadService {
             image: true,
             user_id: true,
             isLiked: true,
+            created_at: true,
             user: {
               select: {
                 id: true,
@@ -213,6 +214,7 @@ export default new (class ThreadService {
                 fullname: true,
                 email: true,
                 profile_picture: true,
+                created_at: true,
                 bio: true,
               },
             },
@@ -221,8 +223,17 @@ export default new (class ThreadService {
                 id: true,
                 content: true,
                 image: true,
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    fullname: true,
+                    profile_picture: true,
+                  },
+                },
                 user_id: true,
                 thread_id: true,
+                created_at: true,
               },
             },
             likes: {
@@ -239,7 +250,6 @@ export default new (class ThreadService {
         const existingUserIndex = Array.from(threads_data).findIndex(
           (threads) => threads.id === thread_id
         );
-        console.log(existingUserIndex);
         if (existingUserIndex !== -1 && threads_pg !== null) {
           // if thread already exists, update it
           threads_data[existingUserIndex] = threads_pg;
@@ -269,6 +279,7 @@ export default new (class ThreadService {
           image: true,
           user_id: true,
           isLiked: true,
+          created_at: true,
           user: {
             select: {
               id: true,
@@ -276,6 +287,7 @@ export default new (class ThreadService {
               fullname: true,
               email: true,
               profile_picture: true,
+              created_at: true,
               bio: true,
             },
           },
@@ -284,8 +296,17 @@ export default new (class ThreadService {
               id: true,
               content: true,
               image: true,
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  fullname: true,
+                  profile_picture: true,
+                },
+              },
               user_id: true,
               thread_id: true,
+              created_at: true,
             },
           },
           likes: {
@@ -337,14 +358,11 @@ export default new (class ThreadService {
 
       // check if multiple files are uploaded
       if (Array.isArray(req.files)) {
-        // loop through uploaded files and upload to Cloudinary
         for (const file of req.files as Express.Multer.File[]) {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: "circle",
           });
           image_url.push(result.secure_url);
-
-          // delete the temporary file
           fs.unlinkSync(file.path);
         }
       } else {
@@ -354,8 +372,6 @@ export default new (class ThreadService {
           folder: "circle",
         });
         image_url.push(result.secure_url);
-
-        // delete the temporary file
         fs.unlinkSync(file.path);
       }
 
@@ -375,7 +391,7 @@ export default new (class ThreadService {
         data: thread,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -448,7 +464,7 @@ export default new (class ThreadService {
         data: threadUpdate,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -495,7 +511,7 @@ export default new (class ThreadService {
         data: deletethread,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }

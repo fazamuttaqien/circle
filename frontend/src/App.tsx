@@ -1,6 +1,6 @@
 import "react-toastify/dist/ReactToastify.css";
 import { Fragment } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -12,6 +12,12 @@ import { Provider } from "react-redux";
 import getError from "./utils/getError";
 import store from "./redux/store";
 import Router from "./routers/router";
+
+const theme = extendTheme({
+  colors: {
+    myGreen: "#04A51E",
+  },
+});
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -36,7 +42,7 @@ function App() {
       <Fragment>
         <Provider store={store}>
           <QueryClientProvider client={queryClient}>
-            <ChakraProvider>
+            <ChakraProvider theme={theme}>
               <Router />
             </ChakraProvider>
             <ReactQueryDevtools initialIsOpen={false} position="bottom" />

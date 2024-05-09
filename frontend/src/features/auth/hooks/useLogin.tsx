@@ -27,8 +27,6 @@ export function useLogin() {
 
       const response = await API.post("login", form);
 
-      console.log(response);
-
       toast.success(response.data.message, {
         position: "top-center",
         autoClose: 5000,

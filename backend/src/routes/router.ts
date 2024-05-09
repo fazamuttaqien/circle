@@ -95,14 +95,18 @@ router.get(
 // User
 router.get("/users", AuthMiddelware.Auth, UserController.findAll);
 router.get("/users/:userId", AuthMiddelware.Auth, UserController.findByID);
-router.get("/users/name/:name", AuthMiddelware.Auth, UserController.findByName);
+router.get(
+  "/usersbyname/:name",
+  AuthMiddelware.Auth,
+  UserController.findByName
+);
 router.get(
   "/users/suggested/:limit",
   AuthMiddelware.Auth,
   UserController.getSuggestedUser
 );
 router.put(
-  "/users/nopp/:userId",
+  "/users/noprofilepicture/:userId",
   AuthMiddelware.Auth,
   UserController.updateWithoutImage
 );
@@ -112,8 +116,13 @@ router.put(
   upload.single("image"),
   UserController.uploadProfilePicture
 );
+router.put(
+  "/users/:userId",
+  AuthMiddelware.Auth,
+  upload.single("image"),
+  UserController.update
+);
 router.delete("/users/:userId", AuthMiddelware.Auth, UserController.delete);
-
 router.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 export default router;

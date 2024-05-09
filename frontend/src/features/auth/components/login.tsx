@@ -33,9 +33,10 @@ export default function Login() {
   } = useLogin();
 
   useEffect(() => {
-    console.log("isLogin", isLoginSuccess);
     if (isLoginSuccess) {
-      console.log("success to homepage");
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
       navigate("/");
     }
   }, [isLoginSuccess]);
@@ -50,7 +51,7 @@ export default function Login() {
             height={"100vh"}
           >
             <Image
-              src="..\public\circle.png"
+              src="https://res.cloudinary.com/dklgstji2/image/upload/v1715162106/circle/gzjhiuhyc0l8vuptbtcr.png"
               alt="Dumbways Logo"
               width={"500px"}
               display={"inline"}
@@ -72,12 +73,13 @@ export default function Login() {
                 noOfLines={1}
                 color={"green.400"}
                 mb={3}
+                ml={3}
               >
                 circle
               </Heading>
-              <Text fontSize={"xl"} mb={3}>
-                Login to Circle
-              </Text>
+              {/* <Text fontSize={"xl"} mb={3} ml={3}>
+                Login
+              </Text> */}
               {isError && (
                 <Alert status="error" bg={"#FF6969"} mb={3} borderRadius={5}>
                   <AlertIcon color={"white"} />
@@ -87,10 +89,11 @@ export default function Login() {
               <FormControl mb={4}>
                 <Input
                   type="text"
-                  placeholder="Email/Username *"
+                  placeholder="Email *"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
+                  border={"none"}
                 />
               </FormControl>
               <FormControl mb={4}>
@@ -101,6 +104,7 @@ export default function Login() {
                     value={form.password}
                     onChange={handleChange}
                     type={show ? "text" : "password"}
+                    border={"none"}
                   />
                   <InputRightElement width="4.5rem">
                     <Button
@@ -116,7 +120,7 @@ export default function Login() {
               {isLoading ? (
                 <Button
                   isLoading
-                  colorScheme="green"
+                  colorScheme="#04A51E"
                   variant="solid"
                   borderRadius={"full"}
                   width={"100%"}
@@ -136,8 +140,8 @@ export default function Login() {
                   Login
                 </Button>
               )}
-              <Text>
-                Have no account yet?{" "}
+              <Text ml={3}>
+                Have no account yet ?{" "}
                 <Link style={{ color: "#48bb78" }} to={"/register"}>
                   Register
                 </Link>

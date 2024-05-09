@@ -85,16 +85,12 @@ export default new (class ThreadsQueue {
                   user: { connect: { id: userId } },
                 },
               });
-              console.log(
-                "Get message from rabbitMQ:",
-                message.content.toString()
-              );
 
               rabbitData = rabbit;
               channel.ack(message);
               resolve();
             } catch (error) {
-              console.log("Error:", error);
+              console.error("Error:", error);
               reject(error);
             }
           }
@@ -112,7 +108,7 @@ export default new (class ThreadsQueue {
         data: rabbitData,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }
@@ -186,16 +182,11 @@ export default new (class ThreadsQueue {
                   user: { connect: { id: userId } },
                 },
               });
-              console.log(
-                "Get message from rabbitMQ:",
-                message.content.toString()
-              );
-
               rabbitData = rabbit;
               channel.ack(message);
               resolve();
             } catch (error) {
-              console.log("Error:", error);
+              console.error("Error:", error);
               reject(error);
             }
           }
@@ -213,7 +204,7 @@ export default new (class ThreadsQueue {
         data: rabbitData,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }

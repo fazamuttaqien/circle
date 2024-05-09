@@ -5,7 +5,7 @@ interface ThreadRedis {
   image: string[] | null;
   user_id: string;
   isLiked: boolean | null;
-  // created_at?: Date | string;
+  created_at?: Date | string;
   likes: {
     id: string;
     user_id: string;
@@ -15,7 +15,7 @@ interface ThreadRedis {
     id: string;
     content: string;
     image?: string | null;
-    // created_at?: Date | string;
+    created_at?: Date | string;
     thread_id: string;
     user_id: string;
   }[];
@@ -26,8 +26,8 @@ interface ThreadRedis {
     email: string;
     profile_picture: string;
     bio: string;
-    // created_at?: Date | string;
-    // updated_at?: Date | string;
+    created_at?: Date | string;
+    updated_at?: Date | string;
   };
 }
 
@@ -57,15 +57,27 @@ interface UserRedis {
     user_id: string;
     isLiked: boolean | null;
   }[];
-  followers: {
+  follower: {
     id: string;
     followerId: string;
     isFollow: boolean | null;
+    follower: {
+      id: string;
+      username: string;
+      fullname: string;
+      profile_picture: string;
+    };
   }[];
   following: {
     id: string;
     followingId: string;
     isFollow: boolean | null;
+    following: {
+      id: string;
+      username: string;
+      fullname: string;
+      profile_picture: string;
+    };
   }[];
 }
 

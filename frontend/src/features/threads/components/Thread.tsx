@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import {
   Alert,
   AlertDescription,
@@ -9,6 +9,7 @@ import {
   Spinner,
   Text,
   Image,
+  Stack,
 } from "@chakra-ui/react";
 import moment from "moment";
 import Swal from "sweetalert2";
@@ -40,10 +41,12 @@ export default function Thread() {
   const { mutate: mutateDelete } = useDeleteThread();
   const { data: profileData } = useAppSelectore((state) => state.profile);
 
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
   return (
     <Fragment>
       <Box flex={1} px={5} py={10} overflow={"auto"} className="hide-scroll">
-        <Text fontSize={"2xl"} mb={"10px"}>
+        <Text fontSize={"2xl"} mb={"10px"} ml={"15px"}>
           Home
         </Text>
         <ThreadForm /> <br />
@@ -66,7 +69,7 @@ export default function Thread() {
                       <Fragment key={thread.id}>
                         <Flex
                           gap={"15px"}
-                          border={"2px solid #3a3a3a"}
+                          border={"2px solid #262626"}
                           p={"20px"}
                           mb={"10px"}
                         >
@@ -108,19 +111,39 @@ export default function Thread() {
                             </Box>
                             <Text
                               fontSize={"sm"}
-                              mb={"10px"}
                               wordBreak={"break-word"}
                             >
                               {thread.content}
                             </Text>
-                            {thread.image && (
-                              <Image
-                                width={"100%"}
-                                objectFit="cover"
-                                src={thread.image}
-                                alt={`${thread.image} Image Thread`}
-                              />
-                            )}
+                            {/* Image */}
+                            <Box overflowX="auto" mb={"20px"} borderRadius={"10px"}>
+                              <Stack
+                                ref={imageContainerRef}
+                                spacing={4}
+                                mt={4}
+                                direction="row"
+                                overflowX="auto"
+                              >
+                                {thread.image.length !== 0 &&
+                                  thread.image.map((images, index) => (
+                                    <Box
+                                      key={index}
+                                      position="relative"
+                                      flex="0 0 auto"
+                                      minWidth="100px"
+                                    >
+                                      <Image
+                                        boxSize={"300px"}
+                                        width={"100%"}
+                                        objectFit="cover"
+                                        src={images}
+                                        alt={`${images}@${index}`}
+                                        borderRadius={"10px"}
+                                      />
+                                    </Box>
+                                  ))}
+                              </Stack>
+                            </Box>
 
                             {/* Button like */}
                             <Flex gap={"15px"}>
@@ -217,9 +240,9 @@ export default function Thread() {
                     </Box>
                   ) : (
                     <>
-                      {hasNextPage && (
+                      {/* {hasNextPage && (
                         <Button
-                          colorScheme="green"
+                          colorScheme="#04A51E"
                           size="md"
                           onClick={() => {
                             fetchNextPage();
@@ -227,7 +250,7 @@ export default function Thread() {
                         >
                           Load More
                         </Button>
-                      )}
+                      )} */}
                     </>
                   )}
                 </Flex>
@@ -236,6 +259,17 @@ export default function Thread() {
           </>
         )}
       </Box>
+      {/* <Flex alignItems={"center"} onClick={() => {
+        Swal.
+      }} cursor={"pointer"}>
+        <RiDeleteBin5Line
+          style={{
+            fontSize: "20px",
+            marginRight: "5px",
+            marginTop: "1px",
+          }}
+        />
+      </Flex> */}
     </Fragment>
   );
 }

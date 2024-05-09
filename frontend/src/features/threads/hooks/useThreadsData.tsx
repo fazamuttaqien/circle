@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 
 const token = localStorage.getItem("token");
 
-//  fecth infinite threads
+//  FETCH INFINITY THREADS
 const fecthInfinityThreads = async ({ pageParam = 1 }) => {
   const response = await API.get(`threads/${pageParam}`, {
     headers: {
@@ -35,9 +35,8 @@ export const useInfinityThreads = () => {
     initialPageParam: 1,
   });
 };
-//  fetch infinity threads
 
-//  post threads
+//  POST THREADS
 const postThread = (thread: ThreadPostType) => {
   return API.post("threads", thread, {
     headers: {
@@ -73,9 +72,8 @@ export const usePostThread = (reset: () => void) => {
     },
   });
 };
-//  post threads
 
-//  like threads
+//  LIKE THREADS
 const postLikeThread = (threadId: string) => {
   return API.post(`likes/${threadId}/like`, "", {
     headers: {
@@ -109,9 +107,8 @@ export const usePostLike = () => {
     },
   });
 };
-//  like threads
 
-//  delete threads
+//  DELETE THREADS
 const deleteThread = (threadId: string) => {
   return API.delete(`threads/${threadId}`, {
     headers: {
@@ -145,9 +142,8 @@ export const useDeleteThread = () => {
     },
   });
 };
-//  delete threads
 
-//  detail threads
+//  DETAIL THREADS
 const fetchDetailThread = async (threadId: string) => {
   const response = await API.get(`threads/byid/${threadId}`, {
     headers: {
@@ -164,20 +160,21 @@ export const useDetailThread = (threadId: string) => {
     refetchOnWindowFocus: false,
   });
 };
-//  detail threads
 
-//  post reply
-const postReply = (reply: ReplyPostType) => {
+//  POST REPLY
+const postReply = async (reply: ReplyPostType) => {
   const threadId = reply.threadId;
   const payload = {
     ...reply,
   };
   delete payload.threadId;
-  return API.post(`replies/${threadId}/reply`, payload, {
+  const response = await API.post(`replies/${threadId}/reply`, payload, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "multipart/form-data",
     },
   });
+  return response.data;
 };
 
 export const usePostReply = (reset: () => void) => {
@@ -205,4 +202,91 @@ export const usePostReply = (reset: () => void) => {
     },
   });
 };
-//  post reply
+
+//  DELETE REPLY
+const deleteReply = (replyId: string) => {
+  return API.delete(`replies/${replyId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const useDeleteReply = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteReply,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["detail-thread"],
+      });
+    },
+    onError: (error) => {
+      toast.error(getError(error)),
+        {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        };
+    },
+  });
+};
+
+// UPDATE PROFILE PICTURE
+const updateProfilePicture = async (user: EditProfileType) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("JWT token not found in localStorage.");
+  }
+  const decodedToken = token.split(".")[1];
+  const userData = JSON.parse(atob(decodedToken));
+  const idUser = userData?.User?.id;
+
+  const payload = {
+    ...user,
+  };
+  delete payload.image;
+  delete payload.fullname;
+  delete payload.bio;
+  delete payload.password;
+
+  const response = await API.put(`users/${idUser}`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const usePutProfile = (reset: () => void) => {
+  const queryCLient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateProfilePicture,
+    onSuccess: () => {
+      queryCLient.invalidateQueries({
+        queryKey: ["detail-profile"],
+      });
+      reset();
+    },
+    onError: (error) => {
+      toast.error(getError(error), {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    },
+  });
+};

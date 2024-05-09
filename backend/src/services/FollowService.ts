@@ -65,6 +65,29 @@ export default new (class FollowService {
           followingId: followingId,
           isFollow: true,
         },
+        select: {
+          id: true,
+          followerId: true,
+          followingId: true,
+          follower: {
+            select: {
+              id: true,
+              username: true,
+              fullname: true,
+              profile_picture: true,
+            },
+          },
+          following: {
+            select: {
+              id: true,
+              username: true,
+              fullname: true,
+              profile_picture: true,
+            },
+          },
+          FolowedAt: true,
+          isFollow: true,
+        },
       });
 
       return res.status(201).json({
@@ -74,7 +97,7 @@ export default new (class FollowService {
         data: followUser,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({ message: error });
     }
   }

@@ -48,29 +48,29 @@ export default function SidebarDrawer(props: SidebarDrawerInterface) {
     }
   }
 
-  const deleteAccount = async () => {
-    try {
-      await API.delete(`users/${idToken}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // const deleteAccount = async () => {
+  //   try {
+  //     await API.delete(`users/${idToken}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      localStorage.clear();
-      navigate("/login");
-    } catch (error) {
-      toast.error(getError(error), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    }
-  };
+  //     localStorage.clear();
+  //     navigate("/login");
+  //   } catch (error) {
+  //     toast.error(getError(error), {
+  //       position: "top-center",
+  //       autoClose: 5000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "colored",
+  //     });
+  //   }
+  // };
 
   return (
     <Fragment>
@@ -111,21 +111,21 @@ export default function SidebarDrawer(props: SidebarDrawerInterface) {
               </Box>
             </Link>
 
-            <Link to={`/my-profile/${profile?.id}`}>
+            <Link to={`/profile/${profile?.id}`}>
               <Box display={"flex"} alignItems={"center"} gap={3} mb={6}>
                 <Text fontSize={"2xl"}>
-                  {location.pathname === "/my-profile" ? (
+                  {location.pathname === "/profile" ? (
                     <FaUserAlt />
                   ) : (
                     <FaRegUser />
                   )}
                 </Text>
                 <Text fontSize={"md"} mt={1}>
-                  My Profile
+                  Profile
                 </Text>
               </Box>
             </Link>
-            <Button
+            {/* <Button
               onClick={() => {
                 props.closeDrawer();
                 Swal.fire({
@@ -155,7 +155,7 @@ export default function SidebarDrawer(props: SidebarDrawerInterface) {
                 <RiDeleteBin5Fill />
               </Text>
               <Text fontSize={"md"}>Remove Account</Text>
-            </Button>
+            </Button> */}
           </Box>
           <Flex alignItems={"center"} gap={3} mb={6}>
             <Text fontSize={"2xl"}>
@@ -175,8 +175,8 @@ export default function SidebarDrawer(props: SidebarDrawerInterface) {
                   confirmButtonColor: "#A3D8FF",
                   cancelButtonColor: "#FDFFC2",
                   confirmButtonText: "Yes, logout!",
-                }).then((resault) => {
-                  if (resault.isConfirmed) {
+                }).then((result) => {
+                  if (result.isConfirmed) {
                     localStorage.clear();
                     navigate("/login");
                   }

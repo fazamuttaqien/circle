@@ -11,7 +11,7 @@ export default function Widget() {
         w={{ base: "37%", "2xl": "30%" }}
         px={10}
         py={10}
-        style={{ borderLeft: "3px solid #3a3a3a" }}
+        style={{ borderLeft: "3px solid #262626" }}
         overflow={"auto"}
         className="hide-scroll"
         display={{ base: "none", xl: "block" }}

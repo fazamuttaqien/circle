@@ -11,8 +11,9 @@ interface Login {
 
 interface FollowType {
   id: string;
-  followers: FillFollower;
+  follower: FillFollower;
   following: FillFollower;
+  isFollow: boolean;
 }
 
 interface FillFollower {
@@ -32,7 +33,7 @@ interface UserProfileType {
   bio: string;
   created_at: string;
   updated_at: string;
-  followers: FollowType[];
+  follower: FollowType[];
   following: FollowType[];
 }
 
@@ -56,14 +57,19 @@ interface Suggested {
 }
 
 interface EditProfileType {
-  fullname: string;
-  password: string;
-  bio: string;
+  fullname?: string;
+  password?: string;
+  bio?: string;
+  image?: File;
+}
+
+interface EditProfilePictureType {
+  image?: File;
 }
 
 interface ThreadPostType {
   content: string;
-  image?: File;
+  image?: File[];
 }
 
 interface ReplyPostType {
@@ -75,7 +81,7 @@ interface ReplyPostType {
 interface ThreadHomeType {
   id: string;
   content: string;
-  image: string;
+  image: string[];
   created_at: string;
   updated_at: string;
   user: {

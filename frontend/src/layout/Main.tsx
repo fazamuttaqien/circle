@@ -20,15 +20,11 @@ import Widget from "@/components/Widget";
 import SidebarDrawer from "@/components/SidebarDrawer";
 
 export default function Main({ children }: { children: ReactNode }) {
-  // children is a special parameter in React to handle every component in React
-  // so that we can call all components using children
-
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   return (
     <Fragment>
-      <Flex color="white" h={"100vh"}>
-        <Sidebar />
+      <Flex color="white" h={"100vh"} mx={"10%"}>
+        <Sidebar closeDrawer={onClose} />
         {children}
         <Widget />
 

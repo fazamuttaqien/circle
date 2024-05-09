@@ -31,9 +31,9 @@ export default function Suggested() {
 
   return (
     <Fragment>
-      <Card bg={"#3a3a3a"} color={"white"} mb={"15px"}>
+      <Card bg={"#262626"} color={"white"} mb={"15px"}>
         <CardBody py={4} px={5}>
-          <Text fontSize={"xl"} mb={3}>
+          <Text fontSize={"lg"} mb={3}>
             Suggested For You
           </Text>
           {isLoading ? (
@@ -48,7 +48,7 @@ export default function Suggested() {
               ) : (
                 <>
                   {!suggestedData.length ? (
-                    <Text fontSize={"lmd"}>No Suggest Yet</Text>
+                    <Text fontSize={"sm"}>No Suggest Yet</Text>
                   ) : (
                     <>
                       {suggestedData.map((suggested, index) => (
@@ -80,14 +80,14 @@ export default function Suggested() {
                               <Button
                                 color={"white"}
                                 _hover={{
-                                  bg: "#38a169",
-                                  borderColor: "#38a169",
+                                  bg: "#04A51E",
+                                  borderColor: "#04A51E",
                                 }}
                                 size="sm"
                                 borderRadius={"full"}
                                 variant="outline"
                               >
-                                Visit Profile
+                                Profile
                               </Button>
                             </Link>
                           </Text>

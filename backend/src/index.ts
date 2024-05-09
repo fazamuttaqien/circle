@@ -24,5 +24,5 @@ app.use("/api/circle", router);
 
 app.listen(process.env.PORT, () => {
   redisconnect();
-  console.log(`Server running in PORT : ${process.env.PORT}`);
+  console.log(`Server running on http://localhost:${process.env.PORT}`);
 });

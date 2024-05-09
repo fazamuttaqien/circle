@@ -17,6 +17,11 @@ export default new (class UserController {
   uploadProfilePicture(req: Request, res: Response) {
     UserService.uploadProfilePicture(req, res);
   }
+
+  update(req: Request, res: Response) {
+    UserService.update(req, res);
+  }
+
   getSuggestedUser(req: Request, res: Response) {
     UserService.getSuggestedUser(req, res);
   }
