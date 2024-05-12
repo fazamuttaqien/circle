@@ -25,5 +25,5 @@ export const update = Joi.object({
       "Password must be at least 8 character long and contain at at least one lowercase latter, one uppercase latter, and one number"
     )
     .allow(""),
-  profile_picture: Joi.allow(""),
+  image: Joi.allow(""),
 });

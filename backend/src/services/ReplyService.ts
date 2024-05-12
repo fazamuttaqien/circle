@@ -104,7 +104,9 @@ export default new (class ReplyService {
 
   async updateReply(req: Request, res: Response): Promise<Response> {
     try {
-      const { replyId, threadId } = req.params;
+      // const { replyId, threadId } = req.params;
+      const threadId = req.params.threadId;
+      const replyId = req.params.replyId;
 
       if (!isValidUUID(replyId) && !isValidUUID(threadId)) {
         return res.status(400).json({ message: "invalid UUID" });
@@ -161,7 +163,7 @@ export default new (class ReplyService {
           await cloudinary.uploader.destroy(publicId as string);
         }
       } else {
-        image_url = oldReplyData?.image || "";
+        image_url = "";
       }
 
       const updateReply = await this.ReplyRepository.update({

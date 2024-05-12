@@ -420,7 +420,6 @@ export default new (class ThreadService {
 
       // check if multiple files are uploaded
       if (Array.isArray(req.files)) {
-        // loop through uploaded files and upload to Cloudinary
         for (const file of req.files as Express.Multer.File[]) {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: "circle",

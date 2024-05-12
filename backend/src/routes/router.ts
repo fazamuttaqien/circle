@@ -105,17 +105,23 @@ router.get(
   AuthMiddelware.Auth,
   UserController.getSuggestedUser
 );
+
+// Update nama + password + bio
 router.put(
   "/users/noprofilepicture/:userId",
   AuthMiddelware.Auth,
   UserController.updateWithoutImage
 );
+
+// Update image
 router.put(
   "/users/profilepicture/:userId",
   AuthMiddelware.Auth,
   upload.single("image"),
   UserController.uploadProfilePicture
 );
+
+// Update image + nama + password + bio
 router.put(
   "/users/:userId",
   AuthMiddelware.Auth,

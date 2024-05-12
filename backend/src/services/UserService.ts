@@ -8,6 +8,7 @@ import * as fs from "fs";
 import isValidUUID from "../utils/UUIDUtils";
 import { DEFAULT_EXPIRATION, redis } from "../cache/client";
 import { UserNameRedis, UserRedis } from "../interface";
+import { UploadApiResponse } from "cloudinary";
 
 const prisma = new PrismaClient();
 
@@ -602,7 +603,7 @@ export default new (class UserService {
       console.log(body);
 
       const image = req.file;
-      if (!image) return res.status(400).json({ message: "no image provided" });
+      // if (!image) return res.status(400).json({ message: "no image provided" });
 
       const user = await this.UserRepository.findUnique({
         where: { id: userId },
@@ -635,35 +636,49 @@ export default new (class UserService {
       }
 
       // ==================== UPLOAD IMAGE ==================== //
-      const oldUserData = await this.UserRepository.findUnique({
+      const oldUserData = await this.UserRepository.findUniqueOrThrow({
         where: { id: userId },
         select: { profile_picture: true },
       });
 
-      const cloudinaryUpload = await cloudinary.uploader.upload(image.path, {
-        folder: "circle",
-      });
+      let cloudinaryUpload: UploadApiResponse;
+      let profile_pictureURL: string = "";
+      if (!image) {
+        cloudinaryUpload = await cloudinary.uploader.upload(
+          oldUserData.profile_picture,
+          {
+            folder: "circle",
+          }
+        );
 
-      const profile_pictureURL = cloudinaryUpload.secure_url;
+        profile_pictureURL = cloudinaryUpload.secure_url;
 
-      fs.unlinkSync(image.path);
+        if (oldUserData && oldUserData.profile_picture) {
+          const publicId = oldUserData.profile_picture
+            .split("/")
+            .pop()
+            ?.split(".")[0];
+          await cloudinary.uploader.destroy(publicId as string);
+        }
+      } else {
+        cloudinaryUpload = await cloudinary.uploader.upload(image.path, {
+          folder: "circle",
+        });
 
-      if (oldUserData && oldUserData.profile_picture) {
-        const publicId = oldUserData.profile_picture
-          .split("/")
-          .pop()
-          ?.split(".")[0];
-        await cloudinary.uploader.destroy(publicId as string);
+        profile_pictureURL = cloudinaryUpload.secure_url;
+
+        fs.unlinkSync(image.path);
+
+        if (oldUserData && oldUserData.profile_picture) {
+          const publicId = oldUserData.profile_picture
+            .split("/")
+            .pop()
+            ?.split(".")[0];
+          await cloudinary.uploader.destroy(publicId as string);
+        }
       }
 
-      console.log({
-        profile_pictureURL,
-        fullname,
-        username,
-        bio,
-        hashPassword,
-      });
-      const updateUser = await this.UserRepository.update({
+      const updated = await this.UserRepository.update({
         where: { id: userId },
         data: {
           profile_picture: profile_pictureURL,
@@ -676,9 +691,8 @@ export default new (class UserService {
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Upload Picture Profile Success",
-        data: updateUser,
+        message: "Update User Success",
+        data: updated,
       });
     } catch (error) {
       console.error(error);
