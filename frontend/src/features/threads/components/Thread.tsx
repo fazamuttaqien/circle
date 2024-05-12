@@ -1,4 +1,4 @@
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 import {
   Alert,
   AlertDescription,
@@ -10,7 +10,9 @@ import {
   Text,
   Image,
   Stack,
+  IconButton,
 } from "@chakra-ui/react";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import moment from "moment";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
@@ -42,6 +44,22 @@ export default function Thread() {
   const { data: profileData } = useAppSelectore((state) => state.profile);
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleNext = (lenImage: number) => {
+    return (event: React.MouseEvent<HTMLButtonElement>) => {
+      setCurrentImageIndex((prevIndex: number) => (prevIndex + 1) % lenImage);
+    };
+  };
+
+  const handlePrev = (lenImage: number) => {
+    return (event: React.MouseEvent<HTMLButtonElement>) => {
+      setCurrentImageIndex(
+        (prevIndex: number) => (prevIndex - 1 + lenImage) % lenImage
+      );
+    };
+  };
 
   return (
     <Fragment>
@@ -109,14 +127,15 @@ export default function Thread() {
                                 </Text>
                               </Box>
                             </Box>
-                            <Text
-                              fontSize={"sm"}
-                              wordBreak={"break-word"}
-                            >
+                            <Text fontSize={"sm"} wordBreak={"break-word"}>
                               {thread.content}
                             </Text>
                             {/* Image */}
-                            <Box overflowX="auto" mb={"20px"} borderRadius={"10px"}>
+                            <Box
+                              overflowX="auto"
+                              mb={"20px"}
+                              borderRadius={"10px"}
+                            >
                               <Stack
                                 ref={imageContainerRef}
                                 spacing={4}

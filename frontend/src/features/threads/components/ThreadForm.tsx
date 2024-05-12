@@ -6,21 +6,13 @@ import {
   GridItem,
   Input,
   Textarea,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Box,
-  useDisclosure,
   Stack,
   IconButton,
   Image,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { RiImageAddFill } from "react-icons/ri";
 import { usePostThread } from "../hooks/useThreadsData";
 
@@ -30,33 +22,13 @@ interface CustomFile extends File {
 
 export default function ThreadForm() {
   const [content, setContent] = useState<string>("");
-  // const [image, setImage] = useState<File[] | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<{ file: File; preview: string }[]>([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { mutate, isPending } = usePostThread(() => {
     setContent("");
-    // setImage(null); // reset the selected image after posting thread
     setImage([]); // reset the selected image after posting thread
   });
-
-  // const postThread = () => {
-  //   const thread: ThreadPostType = {
-  //     content,
-  //   };
-  //   if (image) {
-  //     thread.image = image;
-  //   }
-
-  //   mutate(thread);
-  // };
-  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const files = e.target.files;
-  //   if (files && files.length > 0) {
-  //     const filesArray = Array.from(files);
-  //     setImage(filesArray);
-  //   }
-  // };
 
   const postThread = () => {
     const thread: ThreadPostType = {
@@ -99,6 +71,12 @@ export default function ThreadForm() {
 
   const handleRemoveImage = (index: number) => {
     setImage((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   return (
@@ -155,10 +133,19 @@ export default function ThreadForm() {
                 fontSize={"3xl"}
                 color={"white"}
                 cursor={"pointer"}
-                onClick={onOpen}
+                onClick={handleAvatarClick}
               >
                 <RiImageAddFill />
               </Box>
+              <Input
+                type="file"
+                name="image"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+                ref={fileInputRef}
+              />
             </GridItem>
             <GridItem colStart={6} colEnd={6} h="10">
               {isPending ? (
@@ -180,34 +167,6 @@ export default function ThreadForm() {
           </Grid>
         </GridItem>
       </Grid>
-
-      <Modal
-        isCentered
-        onClose={onClose}
-        isOpen={isOpen}
-        motionPreset="slideInBottom"
-        size={"xl"}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Upload Image</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input
-              type="file"
-              name="image"
-              accept="image/*"
-              multiple
-              onChange={handleFileChange}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Fragment>
   );
 }

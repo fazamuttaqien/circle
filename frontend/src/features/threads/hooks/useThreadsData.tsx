@@ -238,6 +238,59 @@ export const useDeleteReply = () => {
   });
 };
 
+// UPDATE REPLY
+const updateReply = async (reply: ReplyUpdateType) => {
+  const threadId = reply.thread_id;
+  const replyId = reply.replyId;
+  const payload = {
+    ...reply,
+  };
+  console.log("threadId", threadId);
+  console.log("replyId", replyId);
+
+  delete payload.thread_id;
+  delete payload.replyId;
+
+  const response = await API.put(
+    `replies/${threadId}/reply/${replyId}`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const useUpdateReply = (reset: () => void) => {
+  const queryCLient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateReply,
+    onSuccess: () => {
+      queryCLient.invalidateQueries({
+        queryKey: ["detail-thread"],
+      });
+      reset();
+    },
+    onError: (error) => {
+      toast.error(getError(error), {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    },
+  });
+};
+
 // UPDATE PROFILE PICTURE
 const updateProfilePicture = async (user: EditProfileType) => {
   const token = localStorage.getItem("token");

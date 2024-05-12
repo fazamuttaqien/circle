@@ -78,6 +78,13 @@ interface ReplyPostType {
   threadId?: string;
 }
 
+interface ReplyUpdateType {
+  content: string;
+  image?: File;
+  thread_id?: string;
+  replyId?: string;
+}
+
 interface ThreadHomeType {
   id: string;
   content: string;
@@ -113,6 +120,7 @@ interface ThreadReplyType {
   id: string;
   content: string;
   image: string;
+  thread_id: string;
   created_at: string;
   updated_at: string;
   user: {
