@@ -1,26 +1,14 @@
-import {
-  Button,
-  ButtonSpinner,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Box,
-  useDisclosure,
-  Flex,
-} from "@chakra-ui/react";
-import { Fragment, useState } from "react";
+import { Button, ButtonSpinner, Input, Box, Flex } from "@chakra-ui/react";
+import { Fragment, useRef, useState } from "react";
 import { RiImageAddFill } from "react-icons/ri";
 import { usePostReply } from "../hooks/useThreadsData";
 
-export default function ReplyForm({ threadId }: { threadId: string }) {
+export default function ReplyForm({ threadID }: { threadID: string }) {
   const [content, setContent] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const [image, setImage] = useState<{ file: File; preview: string }[]>([]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate, isPending } = usePostReply(() => {
     setContent("");
@@ -30,7 +18,7 @@ export default function ReplyForm({ threadId }: { threadId: string }) {
   const postReply = () => {
     const reply: ReplyPostType = {
       content,
-      threadId,
+      threadID,
     };
     if (image) {
       reply.image = image;
@@ -43,6 +31,12 @@ export default function ReplyForm({ threadId }: { threadId: string }) {
     const files = event.target.files;
     if (files && files.length > 0) {
       setImage(files[0]);
+    }
+  };
+
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -62,10 +56,17 @@ export default function ReplyForm({ threadId }: { threadId: string }) {
           fontSize={"3xl"}
           color={"#04A51E"}
           cursor={"pointer"}
-          onClick={onOpen}
+          onClick={handleImageClick}
         >
           <RiImageAddFill style={{ marginLeft: "10px", marginRight: "10px" }} />
         </Box>
+        <Input
+          type="file"
+          name="image"
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+          ref={fileInputRef}
+        />
         {isPending ? (
           <Button px={"70px"} colorScheme="#04A51E" borderRadius={"full"}>
             <ButtonSpinner />
@@ -81,28 +82,6 @@ export default function ReplyForm({ threadId }: { threadId: string }) {
           </Button>
         )}
       </Flex>
-
-      <Modal
-        isCentered
-        onClose={onClose}
-        isOpen={isOpen}
-        motionPreset="slideInBottom"
-        size={"xl"}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Upload Image</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input type="file" name="image" onChange={handleFileChange} />
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Fragment>
   );
 }

@@ -1,6 +1,6 @@
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { BiLogOut } from "react-icons/bi";
 import { BsHouse, BsHouseFill } from "react-icons/bs";

@@ -37,8 +37,8 @@ export const useInfinityThreads = () => {
 };
 
 //  POST THREADS
-const postThread = (thread: ThreadPostType) => {
-  return API.post("threads", thread, {
+const postThread = async (thread: ThreadPostType) => {
+  return await API.post("threads", thread, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
@@ -74,8 +74,8 @@ export const usePostThread = (reset: () => void) => {
 };
 
 //  LIKE THREADS
-const postLikeThread = (threadId: string) => {
-  return API.post(`likes/${threadId}/like`, "", {
+const postLikeThread = async (threadID: string) => {
+  return await API.post(`likes/${threadID}/like`, "", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -109,8 +109,8 @@ export const usePostLike = () => {
 };
 
 //  DELETE THREADS
-const deleteThread = (threadId: string) => {
-  return API.delete(`threads/${threadId}`, {
+const deleteThread = async (threadID: string) => {
+  return await API.delete(`threads/${threadID}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -144,8 +144,8 @@ export const useDeleteThread = () => {
 };
 
 //  DETAIL THREADS
-const fetchDetailThread = async (threadId: string) => {
-  const response = await API.get(`threads/byid/${threadId}`, {
+const fetchDetailThread = async (threadID: string) => {
+  const response = await API.get(`threads/byid/${threadID}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -153,21 +153,65 @@ const fetchDetailThread = async (threadId: string) => {
   return response.data;
 };
 
-export const useDetailThread = (threadId: string) => {
+export const useDetailThread = (threadID: string) => {
   return useQuery({
     queryKey: ["detail-thread"],
-    queryFn: () => fetchDetailThread(threadId),
+    queryFn: () => fetchDetailThread(threadID),
     refetchOnWindowFocus: false,
+  });
+};
+
+// UDPATE THREADS
+const updateThread = async (thread: ThreadUpdateType) => {
+  const threadId = thread.threadID;
+  const payload = {
+    ...thread,
+  };
+  delete payload.threadID;
+
+  const response = await API.put(`/threads/${threadId}`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+};
+
+export const useUpdateThread = (reset: () => void) => {
+  const queryCLient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateThread,
+    onSuccess: () => {
+      queryCLient.invalidateQueries({
+        queryKey: ["threads-infinity"],
+      });
+      reset();
+    },
+    onError: (error) => {
+      toast.error(getError(error), {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    },
   });
 };
 
 //  POST REPLY
 const postReply = async (reply: ReplyPostType) => {
-  const threadId = reply.threadId;
+  const threadId = reply.threadID;
   const payload = {
     ...reply,
   };
-  delete payload.threadId;
+  delete payload.threadID;
   const response = await API.post(`replies/${threadId}/reply`, payload, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -204,8 +248,8 @@ export const usePostReply = (reset: () => void) => {
 };
 
 //  DELETE REPLY
-const deleteReply = (replyId: string) => {
-  return API.delete(`replies/${replyId}`, {
+const deleteReply = async (replyID: string) => {
+  return await API.delete(`replies/${replyID}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -240,16 +284,14 @@ export const useDeleteReply = () => {
 
 // UPDATE REPLY
 const updateReply = async (reply: ReplyUpdateType) => {
-  const threadId = reply.thread_id;
-  const replyId = reply.replyId;
+  const threadId = reply.threadID;
+  const replyId = reply.replyID;
   const payload = {
     ...reply,
   };
-  console.log("threadId", threadId);
-  console.log("replyId", replyId);
 
-  delete payload.thread_id;
-  delete payload.replyId;
+  delete payload.threadID;
+  delete payload.replyID;
 
   const response = await API.put(
     `replies/${threadId}/reply/${replyId}`,

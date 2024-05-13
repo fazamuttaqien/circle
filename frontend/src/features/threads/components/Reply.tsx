@@ -26,7 +26,7 @@ export default function Reply() {
     data: thread,
     isError,
     error,
-  } = useDetailThread(params.threadId || "");
+  } = useDetailThread(params.threadID || "");
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +60,7 @@ export default function Reply() {
                     borderRadius="full"
                     boxSize="40px"
                     objectFit="cover"
-                    src={`${thread?.data?.user?.profile_picture}`}
+                    src={`${thread?.data?.user?.profilePicture}`}
                     alt={`Profile Picture`}
                   />
                   <Box>
@@ -88,15 +88,6 @@ export default function Reply() {
                     <Text fontSize={"sm"} mb={"10px"} wordBreak={"break-word"}>
                       {thread?.data?.content}
                     </Text>
-                    {/* {thread?.data?.image.length !== 0 && (
-                      <Image
-                        borderRadius="5px"
-                        objectFit="cover"
-                        src={thread.data.image}
-                        alt={`${thread.data.image} Thread Image`}
-                        mb={"10px"}
-                      />
-                    )} */}
                     {/* Image */}
                     <Box overflowX="auto" mb={"20px"} borderRadius={"10px"}>
                       <Stack
@@ -139,13 +130,13 @@ export default function Reply() {
         </Flex>
 
         <Box border={"2px solid #262626"} p={"20px"} mb={"10px"}>
-          <ReplyForm threadId={params.threadId || ""} />
+          <ReplyForm threadID={params.threadID || ""} />
         </Box>
 
         {!isLoading && !isError ? (
           <>
             {thread.data.replies.map((reply: ThreadReplyType) => (
-              <ReplyItem key={reply.id} reply={reply} />
+              <ReplyItem key={reply.ID} reply={reply} />
             ))}
           </>
         ) : null}

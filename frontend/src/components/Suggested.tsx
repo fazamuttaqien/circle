@@ -64,7 +64,7 @@ export default function Suggested() {
                                 borderRadius="full"
                                 boxSize="45px"
                                 objectFit="cover"
-                                src={suggested.profile_picture}
+                                src={suggested.profilePicture}
                                 alt={suggested.fullname}
                               />
                             </Text>
@@ -76,7 +76,7 @@ export default function Suggested() {
                             </Box>
                           </Flex>
                           <Text>
-                            <Link to={`/profile/${suggested.id}`}>
+                            <Link to={`/profile/${suggested.ID}`}>
                               <Button
                                 color={"white"}
                                 _hover={{

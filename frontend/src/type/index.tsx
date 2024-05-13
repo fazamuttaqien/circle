@@ -10,50 +10,50 @@ interface Login {
 }
 
 interface FollowType {
-  id: string;
+  ID: string;
   follower: FillFollower;
   following: FillFollower;
   isFollow: boolean;
 }
 
 interface FillFollower {
-  id: string;
+  ID: string;
   username: string;
   fullname: string;
-  profile_picture: string;
+  profilePicture: string;
 }
 
 interface UserProfileType {
-  id: string;
+  ID: string;
   username: string;
   fullname: string;
   email: string;
   password: null;
-  profile_picture: string;
+  profilePicture: string;
   bio: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   follower: FollowType[];
   following: FollowType[];
 }
 
 interface SearchUserType {
-  id: string;
+  ID: string;
   username: string;
   fullname: string;
   email: string;
   password: null;
-  profile_picture: string;
+  profilePicture: string;
   bio: string | null;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Suggested {
-  id: string;
+  ID: string;
   username: string;
   fullname: string;
-  profile_picture: string;
+  profilePicture: string;
 }
 
 interface EditProfileType {
@@ -72,30 +72,37 @@ interface ThreadPostType {
   image?: File[];
 }
 
+interface ThreadUpdateType {
+  content: string;
+  image?: File[];
+  threadID?: string;
+}
+
 interface ReplyPostType {
   content: string;
   image?: File;
-  threadId?: string;
+  threadID?: string;
 }
 
 interface ReplyUpdateType {
   content: string;
   image?: File;
-  thread_id?: string;
-  replyId?: string;
+  isEdited?: boolean;
+  threadID?: string;
+  replyID?: string;
 }
 
 interface ThreadHomeType {
-  id: string;
+  ID: string;
   content: string;
   image: string[];
-  created_at: string;
-  updated_at: string;
-  user: {
-    id: string;
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    ID: string;
     username: string;
     fullname: string;
-    profile_picture: string;
+    profilePicture: string;
   };
   likes: ThreadLikeType[];
   replies: {
@@ -105,28 +112,29 @@ interface ThreadHomeType {
 }
 
 interface ThreadLikeType {
-  id: string;
-  created_at: string;
-  updated_at: string;
+  ID: string;
+  createdAt: string;
+  updatedAt: string;
   user: {
-    id: string;
+    ID: string;
     username: string;
     fullname: string;
-    profile_picture: string;
+    profilePicture: string;
   };
 }
 
 interface ThreadReplyType {
-  id: string;
+  ID: string;
   content: string;
   image: string;
-  thread_id: string;
-  created_at: string;
-  updated_at: string;
+  threadID: string;
+  isEdited: boolean;
+  createdAt: string;
+  updatedAt: string;
   user: {
-    id: string;
+    ID: string;
     username: string;
     fullname: string;
-    profile_picture: string;
+    profilePicture: string;
   };
 }

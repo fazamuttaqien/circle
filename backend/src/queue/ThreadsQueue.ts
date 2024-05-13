@@ -27,12 +27,12 @@ export default new (class ThreadsQueue {
       const userId = res.locals.loginSession.User.id;
 
       const userSelect = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
       if (!userSelect)
         return res.status(404).json({ message: "User not found" });
 
-      let image_url: string[] = [];
+      let imageURL: string[] = [];
 
       // Check if multiple files are uploaded
       if (Array.isArray(req.files)) {
@@ -41,7 +41,7 @@ export default new (class ThreadsQueue {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: "circle",
           });
-          image_url.push(result.secure_url);
+          imageURL.push(result.secure_url);
 
           // Delete the temporary file
           fs.unlinkSync(file.path);
@@ -52,7 +52,7 @@ export default new (class ThreadsQueue {
         const result = await cloudinary.uploader.upload(file.path, {
           folder: "circle",
         });
-        image_url.push(result.secure_url);
+        imageURL.push(result.secure_url);
 
         // Delete the temporary file
         fs.unlinkSync(file.path);
@@ -60,7 +60,7 @@ export default new (class ThreadsQueue {
 
       const payload = {
         content: body.content,
-        image: image_url,
+        image: imageURL,
         user: res.locals.loginSession.User.id,
       };
 
@@ -81,8 +81,8 @@ export default new (class ThreadsQueue {
                 data: {
                   content: payload.content,
                   image: payload.image,
-                  created_at: new Date(),
-                  user: { connect: { id: userId } },
+                  createdAt: new Date(),
+                  user: { connect: { ID: userId } },
                 },
               });
 
@@ -103,8 +103,7 @@ export default new (class ThreadsQueue {
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Add Threads from rabbit MQ Success",
+        message: "Add threads from rabbitMQ success",
         data: rabbitData,
       });
     } catch (error) {
@@ -115,25 +114,25 @@ export default new (class ThreadsQueue {
 
   async updateThreadQueue(req: Request, res: Response): Promise<Response> {
     try {
-      const threadId = req.params.threadId;
+      const threadId = req.params.threadID;
       if (!isValidUUID(threadId)) {
         return res.status(400).json({ message: "Invalid UUID" });
       }
 
       const userId = res.locals.loginSession.User.id;
       const userSelect = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
       if (!userSelect)
         return res.status(404).json({ message: "User not found" });
 
-      let image_url: string[] = [];
+      let imageURL: string[] = [];
       if (Array.isArray(req.files)) {
         for (const file of req.files as Express.Multer.File[]) {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: "circle",
           });
-          image_url.push(result.secure_url);
+          imageURL.push(result.secure_url);
 
           fs.unlinkSync(file.path);
         }
@@ -142,7 +141,7 @@ export default new (class ThreadsQueue {
         const result = await cloudinary.uploader.upload(file.path, {
           folder: "circle",
         });
-        image_url.push(result.secure_url);
+        imageURL.push(result.secure_url);
 
         fs.unlinkSync(file.path);
       }
@@ -153,7 +152,7 @@ export default new (class ThreadsQueue {
 
       const payload = {
         content: body.content,
-        image: image_url,
+        image: imageURL,
         user: res.locals.loginSession.User.id,
       };
 
@@ -171,15 +170,15 @@ export default new (class ThreadsQueue {
             try {
               const payload = JSON.parse(message.content.toString());
               const rabbit = await this.ThreadRepository.update({
-                where: { id: threadId },
+                where: { ID: threadId },
                 data: {
                   content: payload.content,
                   image: {
                     set: payload.image,
                   },
                   // this created_atshould be replaced updated_at
-                  created_at: new Date(),
-                  user: { connect: { id: userId } },
+                  createdAt: new Date(),
+                  user: { connect: { ID: userId } },
                 },
               });
               rabbitData = rabbit;
@@ -199,8 +198,7 @@ export default new (class ThreadsQueue {
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Update Threads from rabbit MQ Success",
+        message: "Update threads from rabbitMQ success",
         data: rabbitData,
       });
     } catch (error) {

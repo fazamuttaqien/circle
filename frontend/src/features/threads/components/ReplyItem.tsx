@@ -51,8 +51,8 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
   const updateReply = () => {
     const replies: ReplyUpdateType = {
       content,
-      thread_id: reply.thread_id,
-      replyId: reply.id,
+      threadID: reply.threadID,
+      replyID: reply.ID,
     };
     if (image) {
       replies.image = image;
@@ -79,24 +79,29 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
           borderRadius="full"
           boxSize="40px"
           objectFit="cover"
-          src={`${reply?.user?.profile_picture}`}
+          src={`${reply?.user?.profilePicture}`}
           alt={`Profile Picture`}
         />
         <Box>
           <Flex mb={"5px"}>
-            <Link to={`/profile/${reply?.user?.id}`}>
+            <Link to={`/profile/${reply?.user?.ID}`}>
               <Text fontWeight={"bold"} me={"10px"}>
                 {reply?.user?.fullname}
               </Text>
             </Link>
             <Box mt={"2px"} fontSize={"sm"} color={"gray.400"}>
-              <Link to={`/profile/${reply?.user?.id}`}>
+              <Link to={`/profile/${reply?.user?.ID}`}>
                 @{reply?.user?.username}
               </Link>{" "}
               -{" "}
-              <Text display={"inline-block"} title={reply?.created_at}>
-                {moment(new Date(reply?.created_at)).calendar()}
+              <Text display={"inline-block"} title={reply?.createdAt}>
+                {moment(new Date(reply?.createdAt)).calendar()}
               </Text>
+              {reply?.isEdited && (
+                <Text display={"inline-block"} color={"gray.400"} ml={"5px"}>
+                  edited
+                </Text>
+              )}
             </Box>
           </Flex>
           {isPending ? (
@@ -115,15 +120,15 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
                   boxSize="350px"
                   objectFit="cover"
                   src={reply?.image}
-                  alt={`${reply?.image} Reply Image`}
+                  alt={`${reply?.image}`}
                   cursor={"pointer"}
                 />
               )}
             </Box>
           )}
 
-          {/* Delete adn Update Reply */}
-          {reply?.user?.id === profileData?.id && (
+          {/* Delete and Update Reply */}
+          {reply?.user?.ID === profileData?.ID && (
             <Flex alignItems={"center"}>
               <Box
                 onClick={() => {
@@ -137,7 +142,7 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
                     confirmButtonText: "Yes, Delete This Reply!",
                   }).then((result: any) => {
                     if (result.isConfirmed) {
-                      mutateDelete(reply.id);
+                      mutateDelete(reply.ID);
                     }
                   });
                 }}

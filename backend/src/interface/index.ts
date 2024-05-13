@@ -1,95 +1,95 @@
 // =============================================  REDIS =============================================
 interface ThreadRedis {
-  id: string;
+  ID: string;
   content: string;
   image: string[] | null;
-  user_id: string;
+  userID: string;
   isLiked: boolean | null;
-  created_at?: Date | string;
+  createdAt?: Date | string;
   likes: {
-    id: string;
-    user_id: string;
-    thread_id: string;
+    ID: string;
+    userID: string;
+    threadID: string;
   }[];
   replies: {
-    id: string;
+    ID: string;
     content: string;
     image?: string | null;
-    created_at?: Date | string;
-    thread_id: string;
-    user_id: string;
+    createdAt?: Date | string;
+    threadID: string;
+    userID: string;
   }[];
   user: {
-    id: string;
+    ID: string;
     username: string;
     fullname: string;
     email: string;
-    profile_picture: string;
+    profilePicture: string;
     bio: string;
-    created_at?: Date | string;
-    updated_at?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
   };
 }
 
 interface UserRedis {
-  id: string;
+  ID: string;
   username: string;
   fullname: string;
   email: string;
-  profile_picture: string;
+  profilePicture: string;
   bio: string;
   likes: {
-    id: string;
-    user_id: string;
-    thread_id: string;
+    ID: string;
+    userID: string;
+    threadID: string;
   }[];
   replies: {
-    id: string;
+    ID: string;
     content: string;
     image?: string | null;
-    thread_id: string;
-    user_id: string;
+    threadID: string;
+    userID: string;
   }[];
   threads: {
-    id: string;
+    ID: string;
     content: string;
     image: string[];
-    user_id: string;
+    userID: string;
     isLiked: boolean | null;
   }[];
   follower: {
-    id: string;
-    followerId: string;
+    ID: string;
+    followerID: string;
     isFollow: boolean | null;
     follower: {
-      id: string;
+      ID: string;
       username: string;
       fullname: string;
-      profile_picture: string;
+      profilePicture: string;
     };
   }[];
   following: {
-    id: string;
-    followingId: string;
+    ID: string;
+    followingID: string;
     isFollow: boolean | null;
     following: {
-      id: string;
+      ID: string;
       username: string;
       fullname: string;
-      profile_picture: string;
+      profilePicture: string;
     };
   }[];
 }
 
 interface UserNameRedis {
-  id: string;
+  ID: string;
   username: string;
   fullname: string;
   email: string;
-  profile_picture: string;
+  profilePicture: string;
   bio: string;
-  created_at?: Date | null;
-  updated_at?: Date | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
 }
 
 export type { UserRedis, ThreadRedis, UserNameRedis };

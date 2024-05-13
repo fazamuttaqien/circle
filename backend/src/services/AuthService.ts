@@ -22,7 +22,7 @@ export default new (class AuthService {
         where: { email: body.email },
       });
       if (isMailRegisted > 0)
-        return res.status(400).json({ message: "email already registed!" });
+        return res.status(400).json({ message: "Email already registed!" });
 
       const hashPassword = await bcyrpt.hash(body.password, 10);
 
@@ -38,7 +38,7 @@ export default new (class AuthService {
       const result = await cloudinary.uploader.upload(file, {
         folder: "circle",
       });
-      const image_url: string = result.secure_url;
+      const imageURL: string = result.secure_url;
 
       const Auth = await this.AuthRepository.create({
         data: {
@@ -46,15 +46,15 @@ export default new (class AuthService {
           fullname: body.fullname,
           email: body.email,
           password: hashPassword,
-          profile_picture: image_url,
+          profilePicture: imageURL,
           bio: "",
-          created_at: new Date(),
+          createdAt: new Date(),
         },
       });
 
       return res.status(201).json({
         code: 201,
-        message: "register success",
+        message: "Register success",
         data: Auth,
       });
     } catch (error) {
@@ -73,21 +73,21 @@ export default new (class AuthService {
         where: { email: body.email },
       });
       if (!isMailRegisted)
-        return res.status(409).json({ message: "email isn't registed!" });
+        return res.status(409).json({ message: "Email isn't registed!" });
 
       const isMatchPassword = await bcyrpt.compare(
         value.password,
         isMailRegisted.password
       );
       if (!isMatchPassword)
-        return res.status(409).json({ message: "incorect password!" });
+        return res.status(409).json({ message: "Incorect password!" });
 
       const User = {
-        id: isMailRegisted.id,
+        id: isMailRegisted.ID,
         password: isMailRegisted.password,
         username: isMailRegisted.username,
         fullname: isMailRegisted.fullname,
-        profilePicture: isMailRegisted.profile_picture,
+        profilePicture: isMailRegisted.profilePicture,
         bio: isMailRegisted.bio,
       };
 
@@ -95,7 +95,7 @@ export default new (class AuthService {
 
       return res.status(200).json({
         code: 200,
-        message: "login success",
+        message: "Login success",
         token,
       });
     } catch (error) {
@@ -108,15 +108,15 @@ export default new (class AuthService {
     try {
       const user = await this.AuthRepository.findUnique({
         where: {
-          id: res.locals.loginSession.User.id,
+          ID: res.locals.loginSession.User.id,
         },
       });
 
-      if (!user) return res.status(404).json({ message: "user not found" });
+      if (!user) return res.status(404).json({ message: "User not found" });
 
       return res.status(200).json({
         code: 200,
-        message: "user have token",
+        message: "User have token",
       });
     } catch (error) {
       console.error(error);
@@ -130,12 +130,11 @@ export default new (class AuthService {
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
         message: "Logout Success",
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Gagal melakukan logout" });
+      return res.status(500).json({ message: "Failed to logout" });
     }
   }
 })();

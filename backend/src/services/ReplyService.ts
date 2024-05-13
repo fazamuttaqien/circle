@@ -14,86 +14,86 @@ export default new (class ReplyService {
 
   async addReply(req: Request, res: Response): Promise<Response> {
     try {
-      const threadId = req.params.threadId;
+      const threadId = req.params.threadID;
       if (!isValidUUID(threadId)) {
-        return res.status(400).json({ error: "invalid UUID" });
+        return res.status(400).json({ error: "Invalid UUID" });
       }
 
       const userId = res.locals.loginSession.User.id;
 
       const userSelected = await this.UserRepository.findUnique({
         where: {
-          id: userId,
+          ID: userId,
         },
       });
 
       if (!userSelected)
-        return res.status(404).json({ message: "user no found" });
+        return res.status(404).json({ message: "User no found" });
 
       const threadSelected = await this.ThreadRepository.findUnique({
         where: {
-          id: threadId,
+          ID: threadId,
         },
       });
       if (!threadSelected)
-        return res.status(404).json({ message: "thread no found" });
+        return res.status(404).json({ message: "Thread no found" });
 
       const body = req.body;
       const { error } = addthread.validate(body);
       if (error) return res.status(400).json({ message: error.message });
 
       const file = req.file as unknown as Express.Multer.File;
-      let image_url: string = "";
+      let imageURL: string = "";
 
       if (!file) {
-        image_url = "";
+        imageURL = "";
       } else {
         const result = await cloudinary.uploader.upload(file.path, {
           folder: "circle",
         });
-        image_url = result.secure_url;
+        imageURL = result.secure_url;
         fs.unlinkSync(file.path);
       }
 
       const newReply = await this.ReplyRepository.create({
         data: {
           content: body.content,
-          image: image_url,
+          image: imageURL,
           user: {
-            connect: { id: userId },
+            connect: { ID: userId },
           },
           thread: {
-            connect: { id: threadId },
+            connect: { ID: threadId },
           },
         },
         select: {
-          id: true,
+          ID: true,
           content: true,
           image: true,
-          created_at: true,
+          createdAt: true,
           user: {
             select: {
-              id: true,
+              ID: true,
               fullname: true,
               username: true,
-              profile_picture: true,
+              profilePicture: true,
             },
           },
-          thread_id: true,
-          user_id: true,
+          threadID: true,
+          userID: true,
         },
       });
 
       await this.ThreadRepository.update({
-        where: { id: threadId },
+        where: { ID: threadId },
         data: {
-          replies: { connect: { id: newReply.id } },
+          replies: { connect: { ID: newReply.ID } },
         },
       });
 
       return res.status(200).json({
         code: 200,
-        message: "add reply success",
+        message: "Add reply success",
         data: newReply,
       });
     } catch (error) {
@@ -104,50 +104,50 @@ export default new (class ReplyService {
 
   async updateReply(req: Request, res: Response): Promise<Response> {
     try {
-      // const { replyId, threadId } = req.params;
-      const threadId = req.params.threadId;
-      const replyId = req.params.replyId;
+      // const { replyID, threadID } = req.params;
+      const threadId = req.params.threadID;
+      const replyId = req.params.replyID;
 
       if (!isValidUUID(replyId) && !isValidUUID(threadId)) {
-        return res.status(400).json({ message: "invalid UUID" });
+        return res.status(400).json({ message: "Invalid UUID" });
       }
 
       const userId = res.locals.loginSession.User.id;
 
       const userSelected = await this.UserRepository.findUnique({
         where: {
-          id: userId,
+          ID: userId,
         },
       });
 
       if (!userSelected)
-        return res.status(404).json({ message: "user no found" });
+        return res.status(404).json({ message: "User not found" });
 
       const threadSelected = await this.ThreadRepository.findUnique({
         where: {
-          id: threadId,
+          ID: threadId,
         },
       });
       if (!threadSelected)
-        return res.status(404).json({ message: "thread no found" });
+        return res.status(404).json({ message: "Thread not found" });
 
       const replySelected = await this.ReplyRepository.findUnique({
         where: {
-          id: replyId,
+          ID: replyId,
         },
       });
       if (!replySelected)
-        return res.status(404).json({ message: "reply no found" });
+        return res.status(404).json({ message: "Reply not found" });
 
       const body = req.body;
       const { error } = addthread.validate(body);
       if (error) return res.status(400).json({ message: error.message });
 
       const image = req.file;
-      let image_url = "";
+      let imageURL = "";
 
       const oldReplyData = await this.ReplyRepository.findUnique({
-        where: { id: replyId },
+        where: { ID: replyId },
         select: { image: true },
       });
 
@@ -155,7 +155,7 @@ export default new (class ReplyService {
         const cloudinaryUpload = await cloudinary.uploader.upload(image.path, {
           folder: "circle",
         });
-        image_url = cloudinaryUpload.secure_url;
+        imageURL = cloudinaryUpload.secure_url;
         fs.unlinkSync(image.path);
 
         if (oldReplyData && oldReplyData.image) {
@@ -163,21 +163,22 @@ export default new (class ReplyService {
           await cloudinary.uploader.destroy(publicId as string);
         }
       } else {
-        image_url = "";
+        imageURL = oldReplyData?.image || "";
       }
 
       const updateReply = await this.ReplyRepository.update({
-        where: { id: replyId },
+        where: { ID: replyId },
         data: {
           content: body.content,
-          image: image_url,
-          created_at: new Date(),
+          image: imageURL,
+          createdAt: new Date(),
+          isEdited: true,
         },
       });
 
       return res.status(200).json({
         code: 200,
-        message: "update replay success",
+        message: "Update reply success",
         data: updateReply,
       });
     } catch (error) {
@@ -188,22 +189,22 @@ export default new (class ReplyService {
 
   async deleteReply(req: Request, res: Response): Promise<Response> {
     try {
-      const replyId = req.params.replyId;
+      const replyId = req.params.replyID;
 
       if (!isValidUUID(replyId)) {
-        return res.status(400).json({ message: "invalid UUID" });
+        return res.status(400).json({ message: "Invalid UUID" });
       }
 
       const userId = res.locals.loginSession.User.id;
 
       const userSelect = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
       if (!userSelect)
-        return res.status(404).json({ message: "user not found" });
+        return res.status(404).json({ message: "User not found" });
 
       const oldReplyData = await this.ReplyRepository.findUnique({
-        where: { id: replyId },
+        where: { ID: replyId },
         select: { image: true },
       });
 
@@ -213,12 +214,12 @@ export default new (class ReplyService {
       }
 
       const deleteReply = await this.ReplyRepository.delete({
-        where: { id: replyId },
+        where: { ID: replyId },
       });
 
       return res.status(200).json({
         code: 200,
-        message: "delete replay Success",
+        message: "Delete reply success",
         data: deleteReply,
       });
     } catch (error) {

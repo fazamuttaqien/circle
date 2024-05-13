@@ -39,7 +39,7 @@ export default function EditProfile() {
   useEffect(() => {
     if (isEditProfileSuccess) {
       dispatch(getProfile());
-      navigate("/profile/" + profile.data?.id);
+      navigate("/profile/" + profile.data?.ID);
     }
   }, [isEditProfileSuccess]);
 
@@ -61,7 +61,7 @@ export default function EditProfile() {
         >
           <CardBody py={4} px={5}>
             <Flex gap={"3"} alignItems={"center"} mb={4}>
-              <Link to={`/profile/${profile.data?.id}`}>
+              <Link to={`/profile/${profile.data?.ID}`}>
                 <Text fontSize={"2xl"}>
                   <BsArrowLeft />
                 </Text>
@@ -86,7 +86,7 @@ export default function EditProfile() {
                 />
               ) : (
                 <Image
-                  src={profile.data?.profile_picture}
+                  src={profile.data?.profilePicture}
                   alt={profile.data?.username}
                   borderRadius="50%"
                   w={70}

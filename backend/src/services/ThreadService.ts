@@ -15,47 +15,47 @@ export default new (class ThreadService {
 
   async findAllRedis(req: Request, res: Response): Promise<Response> {
     try {
-      const { page = 1, page_size = 10 } = req.query;
-      const parsed_page = parseInt(page as string, 10);
-      const parsed_page_size = parseInt(page_size as string, 10);
+      const { page = 1, pageSize = 10 } = req.query;
+      const parsedPage = parseInt(page as string, 10);
+      const parsedPageSize = parseInt(pageSize as string, 10);
 
-      const skip = (parsed_page - 1) * parsed_page_size;
+      const skip = (parsedPage - 1) * parsedPageSize;
 
-      const cache_key = `threads_page_${page}`;
-      if (!cache_key) return res.status(404).json({ message: "key not found" });
+      const cacheKey = `threadsPage${page}`;
+      if (!cacheKey) return res.status(404).json({ message: "Key not found" });
 
-      const cache_data = await redis.get(cache_key);
-      if (cache_data) {
-        const threads_redis = JSON.parse(cache_data);
+      const cacheData = await redis.get(cacheKey);
+      if (cacheData) {
+        const threadsRedis = JSON.parse(cacheData);
 
-        const threads_pg = await this.ThreadRepository.findMany({
+        const threadsPg = await this.ThreadRepository.findMany({
           skip,
-          take: parsed_page_size,
+          take: parsedPageSize,
           include: {
             user: true,
             likes: true,
             replies: true,
           },
           orderBy: {
-            created_at: "desc",
+            createdAt: "desc",
           },
         });
 
-        const total_thread = await this.ThreadRepository.count();
-        const total_pages = Math.ceil(total_thread / parsed_page_size);
+        const totalThread = await this.ThreadRepository.count();
+        const totalPages = Math.ceil(totalThread / parsedPageSize);
 
-        const check_threads: () => boolean = () => {
-          threads_pg.forEach((thread, index) => {
-            if (thread.content !== threads_redis.data[index].content)
+        const checkThreads: () => boolean = () => {
+          threadsPg.forEach((thread, index) => {
+            if (thread.content !== threadsRedis.data[index].content)
               return false;
-            if (thread.likes.length !== threads_redis.data[index].likes.length)
+            if (thread.likes.length !== threadsRedis.data[index].likes.length)
               return false;
             if (
-              thread.replies.length !== threads_redis.data[index].replies.length
+              thread.replies.length !== threadsRedis.data[index].replies.length
             )
               return false;
             thread.image.forEach((image, i) => {
-              if (image !== threads_redis.data[index].image[i]) {
+              if (image !== threadsRedis.data[index].image[i]) {
                 return false;
               }
             });
@@ -65,66 +65,66 @@ export default new (class ThreadService {
 
         // check whether the data in the database has new data or not
         if (
-          threads_redis.data.length === threads_pg.length &&
-          threads_redis.pagination.total_thread == total_thread &&
-          threads_redis.pagination.total_pages == total_pages &&
-          check_threads()
+          threadsRedis.data.length === threadsPg.length &&
+          threadsRedis.pagination.total_thread == totalThread &&
+          threadsRedis.pagination.total_pages == totalPages &&
+          checkThreads()
         ) {
           // if there is no change then display the existing data in Redis
           return res.status(200).json({
             code: 200,
-            message: "find all cache threads success",
-            data: threads_redis,
+            message: "Find all cache threads success",
+            data: threadsRedis,
           });
         } else {
           // if there are changes, the existing data in Redis will be deleted and new data will be retrieved
-          await redis.del(cache_key);
+          await redis.del(cacheKey);
         }
       }
 
       // retrieving data from the database
-      const threads_pg = await this.ThreadRepository.findMany({
+      const threadsPg = await this.ThreadRepository.findMany({
         skip,
-        take: parsed_page_size,
+        take: parsedPageSize,
         include: {
           user: true,
           likes: true,
           replies: true,
         },
         orderBy: {
-          created_at: "desc",
+          createdAt: "desc",
         },
       });
 
-      const total_thread = await this.ThreadRepository.count();
-      const total_pages = Math.ceil(total_thread / parsed_page_size);
+      const totalThread = await this.ThreadRepository.count();
+      const totalPages = Math.ceil(totalThread / parsedPageSize);
 
       // if (page > total_pages)
       //   return res.status(404).json({ message: "page not found" });
 
-      const data_threads = {
-        data: threads_pg,
+      const dataThreads = {
+        data: threadsPg,
         pagination: {
-          total_thread,
-          total_pages,
-          current_page: page,
-          parsed_page_size,
+          totalThread,
+          totalPages,
+          currentPage: page,
+          parsedPageSize,
         },
       };
 
       await redis.setEx(
-        cache_key,
+        cacheKey,
         DEFAULT_EXPIRATION,
         JSON.stringify({
-          data: data_threads.data,
-          pagination: data_threads.pagination,
+          data: dataThreads.data,
+          pagination: dataThreads.pagination,
         })
       );
 
       return res.status(200).json({
         code: 200,
-        message: "find all threads success",
-        data: data_threads,
+        message: "Find all threads success",
+        data: dataThreads,
       });
     } catch (error) {
       console.error(error);
@@ -134,45 +134,42 @@ export default new (class ThreadService {
 
   async findAll(req: Request, res: Response): Promise<Response> {
     try {
-      const { page = 1, page_size = 10 } = req.query;
-      const parsed_page = parseInt(page as string, 10);
-      const parsed_page_size = parseInt(page_size as string, 10);
+      const { page = 1, pageSize = 10 } = req.query;
+      const parsedPage = parseInt(page as string, 10);
+      const parsedPageSize = parseInt(pageSize as string, 10);
 
-      const skip = (parsed_page - 1) * parsed_page_size;
+      const skip = (parsedPage - 1) * parsedPageSize;
 
-      const threads_pg = await this.ThreadRepository.findMany({
+      const threadsPg = await this.ThreadRepository.findMany({
         skip,
-        take: parsed_page_size,
+        take: parsedPageSize,
         include: {
           user: true,
           likes: true,
           replies: true,
         },
         orderBy: {
-          created_at: "desc",
+          createdAt: "desc",
         },
       });
 
-      const total_thread = await this.ThreadRepository.count();
-      const total_pages = Math.ceil(total_thread / parsed_page_size);
+      const totalThread = await this.ThreadRepository.count();
+      const totalPages = Math.ceil(totalThread / parsedPageSize);
 
-      // if (parsedPage > total_pages)
-      //   return res.status(404).json({ message: "page not found" });
-
-      const data_threads = {
-        data: threads_pg,
+      const dataThreads = {
+        data: threadsPg,
         pagination: {
-          total_thread,
-          total_pages,
-          current_page: page,
-          parsed_page_size,
+          totalThread,
+          totalPages,
+          currentPage: page,
+          parsedPageSize,
         },
       };
 
       return res.status(200).json({
         code: 200,
-        message: "find all threads success",
-        data: data_threads,
+        message: "Find all threads success",
+        data: dataThreads,
       });
     } catch (error) {
       console.error(error);
@@ -182,156 +179,154 @@ export default new (class ThreadService {
 
   async findByID(req: Request, res: Response): Promise<Response> {
     try {
-      const thread_id = req.params.threadId;
+      const threadId = req.params.threadID;
 
-      if (!isValidUUID(thread_id)) {
-        return res.status(400).json({ message: "invalid uuid" });
+      if (!isValidUUID(threadId)) {
+        return res.status(400).json({ message: "Invalid UUID" });
       }
 
-      const cache_key = `threads_id`;
-      if (!cache_key) {
-        return res.status(404).json({ message: "cache key not found" });
+      const cacheKey = `threadsId`;
+      if (!cacheKey) {
+        return res.status(404).json({ message: "Cache key not found" });
       }
 
-      let threads_data: ThreadRedis[] = [];
+      let threadsData: ThreadRedis[] = [];
 
-      const cache = await redis.get(cache_key);
+      const cache = await redis.get(cacheKey);
       if (cache) {
-        threads_data = JSON.parse(cache);
-        const threads_pg = await this.ThreadRepository.findUniqueOrThrow({
-          where: { id: thread_id },
+        threadsData = JSON.parse(cache);
+        const threadsPg = await this.ThreadRepository.findUniqueOrThrow({
+          where: { ID: threadId },
           select: {
-            id: true,
+            ID: true,
             content: true,
             image: true,
-            user_id: true,
+            userID: true,
             isLiked: true,
-            created_at: true,
+            createdAt: true,
             user: {
               select: {
-                id: true,
+                ID: true,
                 username: true,
                 fullname: true,
                 email: true,
-                profile_picture: true,
-                created_at: true,
+                profilePicture: true,
+                createdAt: true,
                 bio: true,
               },
             },
             replies: {
               select: {
-                id: true,
+                ID: true,
                 content: true,
                 image: true,
                 user: {
                   select: {
-                    id: true,
+                    ID: true,
                     username: true,
                     fullname: true,
-                    profile_picture: true,
+                    profilePicture: true,
                   },
                 },
-                user_id: true,
-                thread_id: true,
-                created_at: true,
+                userID: true,
+                threadID: true,
+                createdAt: true,
               },
             },
             likes: {
               select: {
-                id: true,
-                user_id: true,
-                thread_id: true,
+                ID: true,
+                userID: true,
+                threadID: true,
               },
             },
           },
         });
 
         // check if the thread already exists in the redis
-        const existingUserIndex = Array.from(threads_data).findIndex(
-          (threads) => threads.id === thread_id
+        const existingUserIndex = Array.from(threadsData).findIndex(
+          (threads) => threads.ID === threadId
         );
-        if (existingUserIndex !== -1 && threads_pg !== null) {
-          // if thread already exists, update it
-          threads_data[existingUserIndex] = threads_pg;
+        if (existingUserIndex !== -1 && threadsPg !== null) {
+          threadsData[existingUserIndex] = threadsPg;
         } else {
-          // if thread doesn't exist, add it
-          Array.from(threads_data).push(threads_pg);
+          Array.from(threadsData).push(threadsPg);
         }
         await redis.setEx(
-          cache_key,
+          cacheKey,
           DEFAULT_EXPIRATION,
-          JSON.stringify(threads_data)
+          JSON.stringify(threadsData)
         );
-        if (threads_data[existingUserIndex]) {
+        if (threadsData[existingUserIndex]) {
           return res.status(200).json({
             code: 200,
-            message: "find by id cache threads success",
-            data: threads_data[existingUserIndex],
+            message: "Find by id cache threads success",
+            data: threadsData[existingUserIndex],
           });
         }
       }
 
       const thread = await this.ThreadRepository.findUniqueOrThrow({
-        where: { id: thread_id },
+        where: { ID: threadId },
         select: {
-          id: true,
+          ID: true,
           content: true,
           image: true,
-          user_id: true,
+          userID: true,
           isLiked: true,
-          created_at: true,
+          createdAt: true,
           user: {
             select: {
-              id: true,
+              ID: true,
               username: true,
               fullname: true,
               email: true,
-              profile_picture: true,
-              created_at: true,
+              profilePicture: true,
+              createdAt: true,
               bio: true,
             },
           },
           replies: {
             select: {
-              id: true,
+              ID: true,
               content: true,
               image: true,
               user: {
                 select: {
-                  id: true,
+                  ID: true,
                   username: true,
                   fullname: true,
-                  profile_picture: true,
+                  profilePicture: true,
                 },
               },
-              user_id: true,
-              thread_id: true,
-              created_at: true,
+              userID: true,
+              threadID: true,
+              createdAt: true,
             },
           },
           likes: {
             select: {
-              id: true,
-              user_id: true,
-              thread_id: true,
+              ID: true,
+              userID: true,
+              threadID: true,
             },
           },
         },
       });
       if (!thread) {
-        return res.status(404).json({ message: "thread not found" });
+        return res.status(404).json({ message: "Thread not found" });
       }
 
-      threads_data.push(thread);
+      threadsData.push(thread);
       await redis.setEx(
-        cache_key,
+        cacheKey,
         DEFAULT_EXPIRATION,
-        JSON.stringify(threads_data)
+        JSON.stringify(threadsData)
       );
 
       return res.status(200).json({
         code: 200,
-        message: "find by id threads success",
+        message: "Find by id threads success",
         data: thread,
       });
     } catch (error) {
@@ -349,12 +344,12 @@ export default new (class ThreadService {
       const userId = res.locals.loginSession.User.id;
 
       const userSelect = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
       if (!userSelect)
         return res.status(404).json({ message: "User not found" });
 
-      let image_url: string[] = [];
+      let imageURL: string[] = [];
 
       // check if multiple files are uploaded
       if (Array.isArray(req.files)) {
@@ -362,7 +357,7 @@ export default new (class ThreadService {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: "circle",
           });
-          image_url.push(result.secure_url);
+          imageURL.push(result.secure_url);
           fs.unlinkSync(file.path);
         }
       } else {
@@ -371,23 +366,22 @@ export default new (class ThreadService {
         const result = await cloudinary.uploader.upload(file.path, {
           folder: "circle",
         });
-        image_url.push(result.secure_url);
+        imageURL.push(result.secure_url);
         fs.unlinkSync(file.path);
       }
 
       const thread = await this.ThreadRepository.create({
         data: {
           content: body.content,
-          image: image_url,
-          created_at: new Date(),
-          user: { connect: { id: userId } },
+          image: imageURL,
+          createdAt: new Date(),
+          user: { connect: { ID: userId } },
         },
       });
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Add Threads Success",
+        message: "Add threads success",
         data: thread,
       });
     } catch (error) {
@@ -398,7 +392,7 @@ export default new (class ThreadService {
 
   async updateThread(req: Request, res: Response): Promise<Response> {
     try {
-      const threadId = req.params.threadId;
+      const threadId = req.params.threadID;
 
       if (!isValidUUID(threadId)) {
         return res.status(400).json({ message: "Invalid UUID" });
@@ -407,7 +401,7 @@ export default new (class ThreadService {
       const userId = res.locals.loginSession.User.id;
 
       const userSelect = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
       if (!userSelect)
         return res.status(404).json({ message: "User not found" });
@@ -416,7 +410,7 @@ export default new (class ThreadService {
       const { error } = addthread.validate(body);
       if (error) return res.status(400).json({ message: error.message });
 
-      let image_url: string[] = [];
+      let imageURL: string[] = [];
 
       // check if multiple files are uploaded
       if (Array.isArray(req.files)) {
@@ -424,7 +418,7 @@ export default new (class ThreadService {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: "circle",
           });
-          image_url.push(result.url);
+          imageURL.push(result.url);
         }
       } else {
         // single file uploaded
@@ -432,18 +426,19 @@ export default new (class ThreadService {
         const result = await cloudinary.uploader.upload(file.path, {
           folder: "circle",
         });
-        image_url.push(result.secure_url);
+        imageURL.push(result.secure_url);
       }
 
       const threadUpdate = await this.ThreadRepository.update({
-        where: { id: threadId },
+        where: { ID: threadId },
         data: {
           content: body.content,
           image: {
-            set: image_url,
+            set: imageURL,
           },
-          created_at: new Date(),
-          user: { connect: { id: userId } },
+          isEdited: true,
+          createdAt: new Date(),
+          user: { connect: { ID: userId } },
         },
       });
 
@@ -458,8 +453,7 @@ export default new (class ThreadService {
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Update Threads Success",
+        message: "Update threads success",
         data: threadUpdate,
       });
     } catch (error) {
@@ -470,7 +464,7 @@ export default new (class ThreadService {
 
   async deleteThread(req: Request, res: Response): Promise<Response> {
     try {
-      const threadId = req.params.threadId;
+      const threadId = req.params.threadID;
 
       if (!isValidUUID(threadId)) {
         return res.status(400).json({ message: "Invalid UUID" });
@@ -479,35 +473,31 @@ export default new (class ThreadService {
       const userId = res.locals.loginSession.User.id;
 
       const userSelect = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
       if (!userSelect)
         return res.status(404).json({ message: "User not found" });
 
       const oldThreadData = await this.ThreadRepository.findUnique({
-        where: { id: threadId },
+        where: { ID: threadId },
         select: { image: true },
       });
 
       oldThreadData?.image.forEach(async (item) => {
         if (oldThreadData && item) {
-          // the split() method is used to split a string into an array using the specified separator.
-          // the pop() method is used to remove and return the last element of the array.
-          // the split() method is used again here to split the string produced by pop() based on the dot (.).
           const publicId = item.split("/").pop()?.split(".")[0];
           cloudinary.uploader.destroy(publicId as string);
         }
       });
 
-      const deletethread = await this.ThreadRepository.delete({
-        where: { id: threadId },
+      const deleteThread = await this.ThreadRepository.delete({
+        where: { ID: threadId },
       });
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Delete Threads Success",
-        data: deletethread,
+        message: "Delete threads success",
+        data: deleteThread,
       });
     } catch (error) {
       console.error(error);

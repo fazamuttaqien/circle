@@ -15,45 +15,45 @@ export default new (class FollowService {
 
   async follow(req: Request, res: Response): Promise<Response> {
     try {
-      const followingId = req.params.followingId;
+      const followingId = req.params.followingID;
       if (!isValidUUID(followingId)) {
-        return res.status(400).json({ message: "invalid uuid" });
+        return res.status(400).json({ message: "Invalid UUID" });
       }
 
       const userId = res.locals.loginSession.User.id;
 
       if (followingId == userId)
-        return res.status(400).json({ message: "you cant follow your self" });
+        return res.status(400).json({ message: "You cant follow your self" });
 
       const followingUser = await this.UserRepository.findUnique({
         where: {
-          id: followingId,
+          ID: followingId,
         },
       });
 
       if (!followingUser)
-        return res.status(404).json({ message: "User no found" });
+        return res.status(404).json({ message: "User not found" });
 
       const followerUser = await this.UserRepository.findUnique({
         where: {
-          id: userId,
+          ID: userId,
         },
       });
 
       if (!followerUser)
-        return res.status(404).json({ message: "User no found" });
+        return res.status(404).json({ message: "User not found" });
 
       const exitingFollow = await this.UserFollowingRepository.findFirst({
         where: {
-          followerId: userId,
-          followingId: followingId,
+          followerID: userId,
+          followingID: followingId,
         },
       });
 
       if (exitingFollow) {
         await this.UserFollowingRepository.delete({
           where: {
-            id: exitingFollow.id,
+            ID: exitingFollow.ID,
           },
         });
         return res.status(200).json({ message: "You unfollow this user" });
@@ -61,39 +61,38 @@ export default new (class FollowService {
 
       const followUser = await this.UserFollowingRepository.create({
         data: {
-          followerId: userId,
-          followingId: followingId,
+          followerID: userId,
+          followingID: followingId,
           isFollow: true,
         },
         select: {
-          id: true,
-          followerId: true,
-          followingId: true,
+          ID: true,
+          followerID: true,
+          followingID: true,
           follower: {
             select: {
-              id: true,
+              ID: true,
               username: true,
               fullname: true,
-              profile_picture: true,
+              profilePicture: true,
             },
           },
           following: {
             select: {
-              id: true,
+              ID: true,
               username: true,
               fullname: true,
-              profile_picture: true,
+              profilePicture: true,
             },
           },
-          FolowedAt: true,
+          folowedAt: true,
           isFollow: true,
         },
       });
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Follow User Success",
+        message: "Follow user success",
         data: followUser,
       });
     } catch (error) {

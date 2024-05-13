@@ -16,47 +16,47 @@ export default new (class LikeService {
 
   async like(req: Request, res: Response): Promise<Response> {
     try {
-      const threadId = req.params.threadId;
+      const threadId = req.params.threadID;
 
       if (!isValidUUID(threadId)) {
-        return res.status(400).json({ message: "invalid UUID" });
+        return res.status(400).json({ message: "Invalid UUID" });
       }
 
       const userId = res.locals.loginSession.User.id;
 
       const userSelected = await this.UserRepository.findUnique({
         where: {
-          id: userId,
+          ID: userId,
         },
       });
 
       if (!userSelected)
-        return res.status(404).json({ message: "user no found" });
+        return res.status(404).json({ message: "User not found" });
 
       const threadSelected = await this.ThreadRepository.findUnique({
         where: {
-          id: threadId,
+          ID: threadId,
         },
         include: {
           likes: true,
         },
       });
       if (!threadSelected)
-        return res.status(404).json({ message: "thread no found" });
+        return res.status(404).json({ message: "Thread not found" });
 
       const exitingLike = threadSelected.likes.find(
-        (like) => like.user_id === userId
+        (like) => like.userID === userId
       );
 
       if (exitingLike) {
         await this.LikeRepository.delete({
           where: {
-            id: exitingLike.id,
+            ID: exitingLike.ID,
           },
         });
 
         await this.ThreadRepository.update({
-          where: { id: threadId },
+          where: { ID: threadId },
           data: {
             isLiked: false,
           },
@@ -64,19 +64,19 @@ export default new (class LikeService {
 
         return res.status(200).json({
           code: 200,
-          message: "undo like thread success",
+          message: "Undo like thread success",
         });
       }
 
       const likeThread = await this.LikeRepository.create({
         data: {
-          user_id: userSelected.id,
-          thread_id: threadSelected.id,
+          userID: userSelected.ID,
+          threadID: threadSelected.ID,
         },
       });
 
       await this.ThreadRepository.update({
-        where: { id: threadId },
+        where: { ID: threadId },
         data: {
           isLiked: true,
         },
@@ -84,7 +84,7 @@ export default new (class LikeService {
 
       return res.status(200).json({
         code: 200,
-        message: "like thread success",
+        message: "Like thread success",
         data: likeThread,
       });
     } catch (error) {

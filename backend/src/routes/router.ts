@@ -19,29 +19,29 @@ router.get("/check", AuthMiddelware.Auth, AuthController.check);
 
 // Follow
 router.post(
-  "/follows/:followingId",
+  "/follows/:followingID",
   AuthMiddelware.Auth,
   FollowController.follow
 );
 
 // Like
-router.post("/likes/:threadId/like", AuthMiddelware.Auth, LikeController.like);
+router.post("/likes/:threadID/like", AuthMiddelware.Auth, LikeController.like);
 
 // Reply
 router.post(
-  "/replies/:threadId/reply",
+  "/replies/:threadID/reply",
   AuthMiddelware.Auth,
   upload.single("image"),
   ReplyController.addReply
 );
 router.put(
-  "/replies/:threadId/reply/:replyId",
+  "/replies/:threadID/reply/:replyID",
   AuthMiddelware.Auth,
   upload.single("image"),
   ReplyController.updateReply
 );
 router.delete(
-  "/replies/:replyId",
+  "/replies/:replyID",
   AuthMiddelware.Auth,
   ReplyController.deleteReply
 );
@@ -49,7 +49,7 @@ router.delete(
 // Thread
 router.get("/threads/:page", AuthMiddelware.Auth, ThreadController.findAll);
 router.get(
-  "/threads/byid/:threadId",
+  "/threads/byid/:threadID",
   AuthMiddelware.Auth,
   ThreadController.findByID
 );
@@ -60,13 +60,13 @@ router.post(
   ThreadController.addThread
 );
 router.put(
-  "/threads/:threadId",
+  "/threads/:threadID",
   AuthMiddelware.Auth,
   upload.any(),
   ThreadController.updateThread
 );
 router.delete(
-  "/threads/:threadId",
+  "/threads/:threadID",
   AuthMiddelware.Auth,
   ThreadController.deleteThread
 );
@@ -79,7 +79,7 @@ router.post(
   ThreadController.addThreadQueue
 );
 router.put(
-  "/threads/queue/:threadId",
+  "/threads/queue/:threadID",
   AuthMiddelware.Auth,
   upload.any(),
   ThreadController.updateThreadQueue
@@ -94,7 +94,7 @@ router.get(
 
 // User
 router.get("/users", AuthMiddelware.Auth, UserController.findAll);
-router.get("/users/:userId", AuthMiddelware.Auth, UserController.findByID);
+router.get("/users/:userID", AuthMiddelware.Auth, UserController.findByID);
 router.get(
   "/usersbyname/:name",
   AuthMiddelware.Auth,
@@ -106,29 +106,26 @@ router.get(
   UserController.getSuggestedUser
 );
 
-// Update nama + password + bio
 router.put(
-  "/users/noprofilepicture/:userId",
+  "/users/noprofilepicture/:userID",
   AuthMiddelware.Auth,
   UserController.updateWithoutImage
 );
 
-// Update image
 router.put(
-  "/users/profilepicture/:userId",
+  "/users/profilepicture/:userID",
   AuthMiddelware.Auth,
   upload.single("image"),
   UserController.uploadProfilePicture
 );
 
-// Update image + nama + password + bio
 router.put(
-  "/users/:userId",
+  "/users/:userID",
   AuthMiddelware.Auth,
   upload.single("image"),
   UserController.update
 );
-router.delete("/users/:userId", AuthMiddelware.Auth, UserController.delete);
+router.delete("/users/:userID", AuthMiddelware.Auth, UserController.delete);
 router.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 export default router;

@@ -63,7 +63,7 @@ export default function Profile() {
                       border={"5px solid #262626"}
                       boxSize="75px"
                       objectFit="cover"
-                      src={profileData?.profile_picture}
+                      src={profileData?.profilePicture}
                       alt={profileData?.fullname}
                       position={"absolute"}
                       top={"40px"}

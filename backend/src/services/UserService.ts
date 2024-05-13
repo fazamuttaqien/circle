@@ -25,13 +25,13 @@ export default new (class UserService {
       const pageSize = 10;
       const skip = (page - 1) * pageSize;
 
-      const cache_key = `users_page_${page}`;
-      if (!cache_key) return res.status(404).json({ message: "key not found" });
+      const cacheKey = `usersPage${page}`;
+      if (!cacheKey) return res.status(404).json({ message: "Key not found" });
 
-      const cache_data = await redis.get(cache_key);
-      if (cache_data) {
-        const users_redis = JSON.parse(cache_data);
-        const users_pg = await this.UserRepository.findMany({
+      const cacheData = await redis.get(cacheKey);
+      if (cacheData) {
+        const usersRedis = JSON.parse(cacheData);
+        const usersPg = await this.UserRepository.findMany({
           skip,
           take: pageSize,
         });
@@ -40,54 +40,54 @@ export default new (class UserService {
         const totalPages = Math.ceil(totalUsers / pageSize);
 
         if (
-          users_redis.data.length === users_pg.length &&
-          users_redis.pagination.total_users === totalUsers &&
-          users_redis.pagination.total_pages === totalPages
+          usersRedis.data.length === usersPg.length &&
+          usersRedis.pagination.totalUsers === totalUsers &&
+          usersRedis.pagination.totalPages === totalPages
         ) {
           return res.status(200).json({
             code: 200,
-            message: "find all cache user success",
-            data: users_redis,
+            message: "Find all cache user success",
+            data: usersRedis,
           });
         } else {
-          await redis.del(cache_key);
+          await redis.del(cacheKey);
         }
       }
 
-      const users_pg = await this.UserRepository.findMany({
+      const usersPg = await this.UserRepository.findMany({
         skip,
         take: pageSize,
       });
 
-      const total_users = await this.UserRepository.count();
-      const total_pages = Math.ceil(total_users / pageSize);
+      const totalUsers = await this.UserRepository.count();
+      const totalPages = Math.ceil(totalUsers / pageSize);
 
-      if (page > total_pages)
-        return res.status(404).json({ message: "page not found" });
+      if (page > totalPages)
+        return res.status(404).json({ message: "Page not found" });
 
-      const data_users = {
-        data: users_pg,
+      const dataUsers = {
+        data: usersPg,
         pagination: {
-          total_users,
-          total_pages,
+          totalUsers,
+          totalPages,
           currentPage: page,
           pageSize,
         },
       };
 
       await redis.setEx(
-        cache_key,
+        cacheKey,
         DEFAULT_EXPIRATION,
         JSON.stringify({
-          data: data_users.data,
-          pagination: data_users.pagination,
+          data: dataUsers.data,
+          pagination: dataUsers.pagination,
         })
       );
 
       return res.status(200).json({
         code: 200,
-        message: "find all users success",
-        data: data_users,
+        message: "Find all users success",
+        data: dataUsers,
       });
     } catch (error) {
       console.error(error);
@@ -97,81 +97,81 @@ export default new (class UserService {
 
   async findByID(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userID;
       if (!isValidUUID(userId)) {
         return res.status(400).json({ message: "Invalid UUID" });
       }
 
-      const cache_key = `user_id`;
-      if (!cache_key) return res.status(404).json({ message: "key not found" });
+      const cacheKey = `userID`;
+      if (!cacheKey) return res.status(404).json({ message: "Key not found" });
 
-      let users_data: UserRedis[] = [];
+      let usersData: UserRedis[] = [];
 
-      const cache = await redis.get(cache_key);
+      const cache = await redis.get(cacheKey);
       if (cache) {
-        users_data = JSON.parse(cache);
-        const users_pg = await this.UserRepository.findUniqueOrThrow({
+        usersData = JSON.parse(cache);
+        const usersPg = await this.UserRepository.findUniqueOrThrow({
           where: {
-            id: userId,
+            ID: userId,
           },
           select: {
-            id: true,
+            ID: true,
             username: true,
             fullname: true,
             email: true,
-            profile_picture: true,
+            profilePicture: true,
             bio: true,
             threads: {
               select: {
-                id: true,
+                ID: true,
                 content: true,
                 image: true,
-                user_id: true,
+                userID: true,
                 isLiked: true,
               },
             },
             likes: {
               select: {
-                id: true,
-                user_id: true,
-                thread_id: true,
+                ID: true,
+                userID: true,
+                threadID: true,
               },
             },
             replies: {
               select: {
-                id: true,
+                ID: true,
                 content: true,
                 image: true,
-                user_id: true,
-                thread_id: true,
+                userID: true,
+                threadID: true,
               },
             },
             following: {
               select: {
-                id: true,
-                followingId: true,
+                ID: true,
+                followingID: true,
                 isFollow: true,
                 following: {
                   select: {
-                    id: true,
+                    ID: true,
                     username: true,
                     fullname: true,
-                    profile_picture: true,
+                    profilePicture: true,
                   },
                 },
               },
             },
             follower: {
               select: {
-                id: true,
-                followerId: true,
+                ID: true,
+                followerID: true,
                 isFollow: true,
                 follower: {
                   select: {
-                    id: true,
+                    ID: true,
                     username: true,
                     fullname: true,
-                    profile_picture: true,
+                    profilePicture: true,
                   },
                 },
               },
@@ -180,92 +180,92 @@ export default new (class UserService {
         });
 
         // check if the user already exists in the redis
-        const existingUserIndex = Array.from(users_data).findIndex(
-          (users) => users.id === userId
+        const existingUserIndex = Array.from(usersData).findIndex(
+          (users) => users.ID === userId
         );
-        if (existingUserIndex !== -1 && users_pg !== null) {
+        if (existingUserIndex !== -1 && usersPg !== null) {
           // if user already exists, update it
-          users_data[existingUserIndex] = users_pg;
+          usersData[existingUserIndex] = usersPg;
         } else {
           // if user doesn't exist, add it
-          Array.from(users_data).push(users_pg);
+          Array.from(usersData).push(usersPg);
         }
         await redis.setEx(
-          cache_key,
+          cacheKey,
           DEFAULT_EXPIRATION,
-          JSON.stringify(users_data)
+          JSON.stringify(usersData)
         );
-        if (users_data[existingUserIndex]) {
+        if (usersData[existingUserIndex]) {
           return res.status(200).json({
             code: 200,
-            message: "find by id cache threads success",
-            data: users_data[existingUserIndex],
+            message: "Find by id cache threads success",
+            data: usersData[existingUserIndex],
           });
         }
       }
 
       const users = await this.UserRepository.findUniqueOrThrow({
         where: {
-          id: userId,
+          ID: userId,
         },
         select: {
-          id: true,
+          ID: true,
           username: true,
           fullname: true,
           email: true,
-          profile_picture: true,
+          profilePicture: true,
           bio: true,
           threads: {
             select: {
-              id: true,
+              ID: true,
               content: true,
               image: true,
-              user_id: true,
+              userID: true,
               isLiked: true,
             },
           },
           likes: {
             select: {
-              id: true,
-              user_id: true,
-              thread_id: true,
+              ID: true,
+              userID: true,
+              threadID: true,
             },
           },
           replies: {
             select: {
-              id: true,
+              ID: true,
               content: true,
               image: true,
-              user_id: true,
-              thread_id: true,
+              userID: true,
+              threadID: true,
             },
           },
           following: {
             select: {
-              id: true,
-              followingId: true,
+              ID: true,
+              followingID: true,
               isFollow: true,
               following: {
                 select: {
-                  id: true,
+                  ID: true,
                   username: true,
                   fullname: true,
-                  profile_picture: true,
+                  profilePicture: true,
                 },
               },
             },
           },
           follower: {
             select: {
-              id: true,
-              followerId: true,
+              ID: true,
+              followerID: true,
               isFollow: true,
               follower: {
                 select: {
-                  id: true,
+                  ID: true,
                   username: true,
                   fullname: true,
-                  profile_picture: true,
+                  profilePicture: true,
                 },
               },
             },
@@ -273,18 +273,18 @@ export default new (class UserService {
         },
       });
 
-      if (!users) return res.status(404).json({ message: "user not found" });
+      if (!users) return res.status(404).json({ message: "User not found" });
 
-      users_data.push(users);
+      usersData.push(users);
       await redis.setEx(
-        cache_key,
+        cacheKey,
         DEFAULT_EXPIRATION,
-        JSON.stringify(users_data)
+        JSON.stringify(usersData)
       );
 
       return res.status(200).json({
         code: 200,
-        message: "find by id user success",
+        message: "Find by id user success",
         data: users,
       });
     } catch (error) {
@@ -390,11 +390,11 @@ export default new (class UserService {
         },
       });
 
-      if (!user) return res.status(404).json({ message: "user not found" });
+      if (!user) return res.status(404).json({ message: "User not found" });
 
       return res.status(200).json({
         code: 200,
-        message: "find by name user success",
+        message: "Find by name user success",
         data: user,
       });
     } catch (error) {
@@ -409,34 +409,34 @@ export default new (class UserService {
 
       const userid = res.locals.loginSession.User.id;
       const followingUsers = await this.UserRepository.findFirstOrThrow({
-        where: { id: userid },
+        where: { ID: userid },
         select: {
-          id: true,
+          ID: true,
           fullname: true,
           following: {
             select: {
-              followingId: true,
+              followingID: true,
             },
           },
         },
       });
 
       const followings = followingUsers.following.map(
-        (item) => item.followingId
+        (item) => item.followingID
       );
 
       const users = await this.UserRepository.findMany({
         select: {
-          id: true,
+          ID: true,
           fullname: true,
           username: true,
-          profile_picture: true,
+          profilePicture: true,
         },
       });
 
       const data: any[] = [];
       for (let i = 0; i < users.length; i++) {
-        if (users[i].id !== userid && !followings.includes(users[i].id)) {
+        if (users[i].ID !== userid && !followings.includes(users[i].ID)) {
           data.push(users[i]);
         }
       }
@@ -444,8 +444,7 @@ export default new (class UserService {
 
       return res.status(200).json({
         code: 200,
-        status: "Success",
-        message: "Get Suggested User Success",
+        message: "Get suggested user success",
         data: randomUsers,
       });
     } catch (error) {
@@ -456,7 +455,7 @@ export default new (class UserService {
 
   async updateWithoutImage(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userID;
       if (!isValidUUID(userId)) {
         return res.status(400).json({ message: "Invalid UUID" });
       }
@@ -466,10 +465,10 @@ export default new (class UserService {
       if (userId !== session)
         return res
           .status(403)
-          .json({ message: "Unauthorization : You're not user Login " });
+          .json({ message: "Unauthorization : You're not user login " });
 
       const user = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
 
       if (!user) return res.status(404).json({ message: "User not found" });
@@ -503,7 +502,7 @@ export default new (class UserService {
       }
 
       const updateUser = await this.UserRepository.update({
-        where: { id: userId },
+        where: { ID: userId },
         data: {
           fullname: fullname,
           username: username,
@@ -514,8 +513,7 @@ export default new (class UserService {
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Upload Data Profile Success",
+        message: "Upload data profile success",
         data: updateUser,
       });
     } catch (error) {
@@ -526,7 +524,7 @@ export default new (class UserService {
 
   async uploadProfilePicture(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userID;
 
       if (!isValidUUID(userId)) {
         return res.status(400).json({ message: "Invalid UUID" });
@@ -540,11 +538,11 @@ export default new (class UserService {
           .json({ message: "Unauthorization : You're not user Login " });
 
       const image = req.file;
-      if (!image) return res.status(400).json({ message: "No Image Provided" });
+      if (!image) return res.status(400).json({ message: "No image provided" });
 
       const oldUserData = await this.UserRepository.findUnique({
-        where: { id: userId },
-        select: { profile_picture: true },
+        where: { ID: userId },
+        select: { profilePicture: true },
       });
 
       const cloudinaryUpload = await cloudinary.uploader.upload(image.path, {
@@ -555,8 +553,8 @@ export default new (class UserService {
 
       fs.unlinkSync(image.path);
 
-      if (oldUserData && oldUserData.profile_picture) {
-        const publicId = oldUserData.profile_picture
+      if (oldUserData && oldUserData.profilePicture) {
+        const publicId = oldUserData.profilePicture
           .split("/")
           .pop()
           ?.split(".")[0];
@@ -564,16 +562,15 @@ export default new (class UserService {
       }
 
       const updateUser = await this.UserRepository.update({
-        where: { id: userId },
+        where: { ID: userId },
         data: {
-          profile_picture: profile_pictureURL,
+          profilePicture: profile_pictureURL,
         },
       });
 
       return res.status(201).json({
         code: 201,
-        status: "Success",
-        message: "Upload Picture Profile Success",
+        message: "Upload picture profile success",
         data: updateUser,
       });
     } catch (error) {
@@ -584,9 +581,9 @@ export default new (class UserService {
 
   async update(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userID;
       if (!isValidUUID(userId)) {
-        return res.status(400).json({ message: "invalid UUID" });
+        return res.status(400).json({ message: "Invalid UUID" });
       }
 
       const session = res.locals.loginSession.User.id;
@@ -594,7 +591,7 @@ export default new (class UserService {
       if (userId !== session) {
         return res
           .status(403)
-          .json({ message: "unauthorization : you're not user login " });
+          .json({ message: "Unauthorization : You're not user login " });
       }
 
       const body = req.body;
@@ -603,12 +600,11 @@ export default new (class UserService {
       console.log(body);
 
       const image = req.file;
-      // if (!image) return res.status(400).json({ message: "no image provided" });
 
       const user = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
       });
-      if (!user) return res.status(404).json({ message: "user not found" });
+      if (!user) return res.status(404).json({ message: "User not found" });
 
       // ==================== UPDATE DATA ==================== //
       let hashPassword = user.password;
@@ -637,24 +633,24 @@ export default new (class UserService {
 
       // ==================== UPLOAD IMAGE ==================== //
       const oldUserData = await this.UserRepository.findUniqueOrThrow({
-        where: { id: userId },
-        select: { profile_picture: true },
+        where: { ID: userId },
+        select: { profilePicture: true },
       });
 
       let cloudinaryUpload: UploadApiResponse;
-      let profile_pictureURL: string = "";
+      let profilePictureURL: string = "";
       if (!image) {
         cloudinaryUpload = await cloudinary.uploader.upload(
-          oldUserData.profile_picture,
+          oldUserData.profilePicture,
           {
             folder: "circle",
           }
         );
 
-        profile_pictureURL = cloudinaryUpload.secure_url;
+        profilePictureURL = cloudinaryUpload.secure_url;
 
-        if (oldUserData && oldUserData.profile_picture) {
-          const publicId = oldUserData.profile_picture
+        if (oldUserData && oldUserData.profilePicture) {
+          const publicId = oldUserData.profilePicture
             .split("/")
             .pop()
             ?.split(".")[0];
@@ -665,12 +661,12 @@ export default new (class UserService {
           folder: "circle",
         });
 
-        profile_pictureURL = cloudinaryUpload.secure_url;
+        profilePictureURL = cloudinaryUpload.secure_url;
 
         fs.unlinkSync(image.path);
 
-        if (oldUserData && oldUserData.profile_picture) {
-          const publicId = oldUserData.profile_picture
+        if (oldUserData && oldUserData.profilePicture) {
+          const publicId = oldUserData.profilePicture
             .split("/")
             .pop()
             ?.split(".")[0];
@@ -679,9 +675,9 @@ export default new (class UserService {
       }
 
       const updated = await this.UserRepository.update({
-        where: { id: userId },
+        where: { ID: userId },
         data: {
-          profile_picture: profile_pictureURL,
+          profilePicture: profilePictureURL,
           password: hashPassword,
           username: username,
           fullname: fullname,
@@ -691,7 +687,7 @@ export default new (class UserService {
 
       return res.status(201).json({
         code: 201,
-        message: "Update User Success",
+        message: "Update user success",
         data: updated,
       });
     } catch (error) {
@@ -702,19 +698,19 @@ export default new (class UserService {
 
   async delete(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userID;
       if (!isValidUUID(userId)) {
-        return res.status(400).json({ message: "invalid UUID" });
+        return res.status(400).json({ message: "Invalid UUID" });
       }
 
       const session = res.locals.loginSession.User.id;
       if (userId !== session)
         return res
           .status(403)
-          .json({ message: "unauthorization : you're not user login" });
+          .json({ message: "Unauthorization : You're not user login" });
 
       const userDelete = await this.UserRepository.findUnique({
-        where: { id: userId },
+        where: { ID: userId },
         include: {
           threads: true,
           likes: true,
@@ -724,27 +720,27 @@ export default new (class UserService {
 
       // Menghapus user delete untuk sesama user yang salaing folow
       if (!userDelete) {
-        return res.status(400).json({ message: "user not found" });
+        return res.status(400).json({ message: "User not found" });
       }
       await this.UserFollowingRepository.deleteMany({
         where: {
-          OR: [{ followerId: userId }, { followingId: userId }],
+          OR: [{ followerID: userId }, { followingID: userId }],
         },
       });
 
       await Promise.all([
-        this.ThreadRepository.deleteMany({ where: { user_id: userId } }),
-        this.LikeRepository.deleteMany({ where: { user_id: userId } }),
-        this.ReplyRepository.deleteMany({ where: { user_id: userId } }),
+        this.ThreadRepository.deleteMany({ where: { userID: userId } }),
+        this.LikeRepository.deleteMany({ where: { userID: userId } }),
+        this.ReplyRepository.deleteMany({ where: { userID: userId } }),
       ]);
 
       const deleteUser = await this.UserRepository.delete({
-        where: { id: userId },
+        where: { ID: userId },
       });
 
       return res.status(200).json({
         code: 200,
-        message: "delete user success",
+        message: "Delete user success",
         data: deleteUser,
       });
     } catch (error) {

@@ -118,7 +118,7 @@ export default function Search() {
                                     borderRadius="full"
                                     boxSize="45px"
                                     objectFit="cover"
-                                    src={user.profile_picture}
+                                    src={user.profilePicture}
                                     alt={user.fullname}
                                   />
                                 </Text>
@@ -130,7 +130,7 @@ export default function Search() {
                                 </Box>
                               </Flex>
                               <Text>
-                                <Link to={`/profile/${user.id}`}>
+                                <Link to={`/profile/${user.ID}`}>
                                   <Button
                                     color={"white"}
                                     _hover={{

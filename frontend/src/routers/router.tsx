@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState } from "react";
 import {
   Routes,
   Route,
@@ -95,7 +95,7 @@ function Router() {
                 />
               </Route>
 
-              <Route path="/reply/:threadId">
+              <Route path="/reply/:threadID">
                 <Route
                   index
                   element={
@@ -117,7 +117,7 @@ function Router() {
                 />
               </Route>
 
-              <Route path="/profile/:userId">
+              <Route path="/profile/:userID">
                 <Route
                   index
                   element={
@@ -128,7 +128,7 @@ function Router() {
                 />
               </Route>
 
-              <Route path="/profile/:userId">
+              <Route path="/profile/:userID">
                 <Route
                   index
                   element={

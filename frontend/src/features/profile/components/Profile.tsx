@@ -40,18 +40,18 @@ export default function Profile() {
   const { data: profile } = useAppSelectore((state) => state.profile);
 
   useEffect(() => {
-    dispatch(getDetailUser(params.userId || ""));
+    dispatch(getDetailUser(params.userID || ""));
   }, [params]);
 
   const followAndUnfollow = async () => {
     try {
-      await API.post("follows/" + params.userId, "", {
+      await API.post("follows/" + params.userID, "", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      dispatch(getDetailUser(params.userId || ""));
+      dispatch(getDetailUser(params.userID || ""));
       dispatch(getProfile());
     } catch (error) {
       toast.error(getError(error), {
@@ -104,10 +104,10 @@ export default function Profile() {
                         position={"absolute"}
                         top={"40px"}
                         left={"20px"}
-                        src={detailUser?.profile_picture}
+                        src={detailUser?.profilePicture}
                         alt={detailUser?.fullname}
                       />
-                      {profile?.id === detailUser?.id && (
+                      {profile?.ID === detailUser?.ID && (
                         <Link to={`/edit-profile`}>
                           <Button
                             color={"white"}
@@ -126,7 +126,7 @@ export default function Profile() {
                         </Link>
                       )}
 
-                      {profile?.id !== detailUser?.id && (
+                      {profile?.ID !== detailUser?.ID && (
                         <>
                           <Button
                             color={"white"}
@@ -140,8 +140,8 @@ export default function Profile() {
                             onClick={followAndUnfollow}
                           >
                             {detailUser?.follower
-                              .map((follower) => follower.id)
-                              .includes(profile?.id || "")
+                              .map((follower) => follower.ID)
+                              .includes(profile?.ID || "")
                               ? "Unfollow"
                               : "Follow"}
                           </Button>
@@ -207,9 +207,7 @@ export default function Profile() {
                                           borderRadius="full"
                                           boxSize="45px"
                                           objectFit="cover"
-                                          src={
-                                            follower.follower.profile_picture
-                                          }
+                                          src={follower.follower.profilePicture}
                                           alt={follower.follower.fullname}
                                         />
                                       </Text>
@@ -227,7 +225,7 @@ export default function Profile() {
                                     </Flex>
                                     <Text>
                                       <Link
-                                        to={`/profile/${follower.follower.id}`}
+                                        to={`/profile/${follower.follower.ID}`}
                                       >
                                         <Button
                                           color={"white"}
@@ -280,8 +278,7 @@ export default function Profile() {
                                             boxSize="45px"
                                             objectFit="cover"
                                             src={
-                                              following.following
-                                                .profile_picture
+                                              following.following.profilePicture
                                             }
                                             alt={following.following.fullname}
                                           />
@@ -300,7 +297,7 @@ export default function Profile() {
                                       </Flex>
                                       <Text>
                                         <Link
-                                          to={`/profile/${following.following.id}`}
+                                          to={`/profile/${following.following.ID}`}
                                         >
                                           <Button
                                             color={"white"}

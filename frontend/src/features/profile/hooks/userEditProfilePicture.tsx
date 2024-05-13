@@ -21,7 +21,7 @@ export function userEditProfilePicture() {
   useEffect(() => {
     setForm({
       image: stringToFile(
-        profile.data?.profile_picture || "",
+        profile.data?.profilePicture || "",
         "image.png",
         "text/plain"
       ),
