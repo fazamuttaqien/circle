@@ -12,7 +12,7 @@ const token = localStorage.getItem("token");
 
 //  FETCH INFINITY THREADS
 const fecthInfinityThreads = async ({ pageParam = 1 }) => {
-  const response = await API.get(`threads/${pageParam}`, {
+  const response = await API.get(`threads/cache/${pageParam}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -303,7 +303,6 @@ const updateReply = async (reply: ReplyUpdateType) => {
       },
     }
   );
-
   return response.data;
 };
 

@@ -57,6 +57,7 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
     if (image) {
       replies.image = image;
     }
+
     mutate(replies);
   };
 
@@ -71,6 +72,8 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
     updateReply();
     onClose();
   };
+
+  console.log("REPLY", reply);
 
   return (
     <Fragment>
@@ -97,8 +100,8 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
               <Text display={"inline-block"} title={reply?.createdAt}>
                 {moment(new Date(reply?.createdAt)).calendar()}
               </Text>
-              {reply?.isEdited && (
-                <Text display={"inline-block"} color={"gray.400"} ml={"5px"}>
+              {reply.isEdited && (
+                <Text display={"inline-block"} color={"blue.400"} ml={"5px"}>
                   edited
                 </Text>
               )}
@@ -164,33 +167,6 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
           )}
         </Box>
       </Flex>
-
-      {/* Modal Upload Image */}
-      {/* <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        motionPreset="slideInBottom"
-        size={"xl"}
-      >
-        <ModalContent borderRadius={0}>
-          <ModalCloseButton />
-          <ModalBody
-            paddingTop={"50px"}
-            paddingBottom={"10px"}
-            paddingRight={"10px"}
-            paddingLeft={"10px"}
-            shadow={"dark-lg"}
-          >
-            <Image
-              onClick={onOpen}
-              width={"100%"}
-              objectFit="cover"
-              src={reply?.image}
-              alt={`${reply?.image} Image Reply`}
-            />
-          </ModalBody>
-        </ModalContent>
-      </Modal> */}
 
       {/* Modal Edit Reply */}
       <Modal

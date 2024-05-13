@@ -220,6 +220,7 @@ export default new (class ThreadService {
                 ID: true,
                 content: true,
                 image: true,
+                isEdited: true,
                 user: {
                   select: {
                     ID: true,
@@ -291,6 +292,7 @@ export default new (class ThreadService {
               ID: true,
               content: true,
               image: true,
+              isEdited: true,
               user: {
                 select: {
                   ID: true,

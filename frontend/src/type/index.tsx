@@ -96,6 +96,7 @@ interface ThreadHomeType {
   ID: string;
   content: string;
   image: string[];
+  isEdited?: boolean;
   createdAt: string;
   updatedAt: string;
   user?: {
@@ -128,7 +129,7 @@ interface ThreadReplyType {
   content: string;
   image: string;
   threadID: string;
-  isEdited: boolean;
+  isEdited?: boolean;
   createdAt: string;
   updatedAt: string;
   user: {

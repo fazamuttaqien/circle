@@ -160,7 +160,7 @@ export default function Thread() {
                 <AlertDescription>{error.message}</AlertDescription>
               </Alert>
             ) : (
-              <>
+              <Fragment>
                 {threads?.pages.map((group, i) => (
                   <Fragment key={i}>
                     {group.data.data.map((thread: ThreadHomeType) => (
@@ -176,7 +176,7 @@ export default function Thread() {
                             boxSize="40px"
                             objectFit="cover"
                             src={thread.user?.profilePicture}
-                            alt={`${thread.user?.fullname} Profile Picture`}
+                            alt={`${thread.user?.fullname}`}
                           />
                           <Box>
                             <Box
@@ -205,6 +205,15 @@ export default function Thread() {
                                     new Date(thread.createdAt)
                                   ).calendar()}
                                 </Text>
+                                {thread.isEdited && (
+                                  <Text
+                                    display={"inline-block"}
+                                    color={"blue.400"}
+                                    ml={"5px"}
+                                  >
+                                    edited
+                                  </Text>
+                                )}
                               </Box>
                             </Box>
                             <Text fontSize={"sm"} wordBreak={"break-word"}>
@@ -320,7 +329,6 @@ export default function Thread() {
                                       style={{
                                         fontSize: "20px",
                                         marginRight: "5px",
-                                        marginTop: "1px",
                                       }}
                                     />
                                   </Box>
@@ -332,7 +340,7 @@ export default function Thread() {
                                     <MdOutlineSystemUpdateAlt
                                       style={{
                                         fontSize: "20px",
-                                        marginLeft: "20px",
+                                        marginLeft: "10px",
                                       }}
                                     />
                                   </Box>
@@ -366,7 +374,7 @@ export default function Thread() {
                     </>
                   )}
                 </Flex>
-              </>
+              </Fragment>
             )}
           </>
         )}
