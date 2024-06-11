@@ -2,8 +2,20 @@
 
 * {
   font-family: "Inter", sans-serif;
+  /* scrollbar-width: none !important;
+  scrollbar-color: transparent var(--primary) !important; */
 }
 
 body {
   background-color: #1d1d1d !important;
+  /* overflow-y: hidden !important; */
+}
+
+.scrollHide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollHide {
+  scrollbar-width: none !important;
+  scrollbar-color: transparent var(--primary) !important;
 }

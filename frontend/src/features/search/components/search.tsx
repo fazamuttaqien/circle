@@ -118,7 +118,7 @@ export default function Search() {
                                     borderRadius="full"
                                     boxSize="45px"
                                     objectFit="cover"
-                                    src={user.profilePicture}
+                                    src={user.avatar}
                                     alt={user.fullname}
                                   />
                                 </Text>

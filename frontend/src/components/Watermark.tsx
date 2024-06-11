@@ -26,7 +26,7 @@ export default function Watermark() {
           <Text fontSize={"xs"} color={"gray.400"}>
             Powered by{" "}
             <Image
-              src="https://res.cloudinary.com/dklgstji2/image/upload/v1715162106/circle/gzjhiuhyc0l8vuptbtcr.png"
+              src="https://res.cloudinary.com/dklgstji2/image/upload/v1715610006/circle/a9iogyue609d6rq24gcu.png"
               alt="Dumbways Logo"
               width={"20px"}
               display={"inline"}

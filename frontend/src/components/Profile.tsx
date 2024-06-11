@@ -15,7 +15,7 @@ import {
 import { Link } from "react-router-dom";
 import { FiEdit3 } from "react-icons/fi";
 import { useAppDispacth, useAppSelectore } from "@/redux/store";
-import { getProfile } from "@/redux/user/profileSlice";
+import { getProfile } from "@/redux/slice/profile";
 
 export default function Profile() {
   const dispatch = useAppDispacth();
@@ -63,7 +63,7 @@ export default function Profile() {
                       border={"5px solid #262626"}
                       boxSize="75px"
                       objectFit="cover"
-                      src={profileData?.profilePicture}
+                      src={profileData?.avatar}
                       alt={profileData?.fullname}
                       position={"absolute"}
                       top={"40px"}

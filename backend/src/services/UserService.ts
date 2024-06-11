@@ -119,7 +119,7 @@ export default new (class UserService {
             username: true,
             fullname: true,
             email: true,
-            profilePicture: true,
+            avatar: true,
             bio: true,
             threads: {
               select: {
@@ -156,7 +156,7 @@ export default new (class UserService {
                     ID: true,
                     username: true,
                     fullname: true,
-                    profilePicture: true,
+                    avatar: true,
                   },
                 },
               },
@@ -171,7 +171,7 @@ export default new (class UserService {
                     ID: true,
                     username: true,
                     fullname: true,
-                    profilePicture: true,
+                    avatar: true,
                   },
                 },
               },
@@ -213,7 +213,7 @@ export default new (class UserService {
           username: true,
           fullname: true,
           email: true,
-          profilePicture: true,
+          avatar: true,
           bio: true,
           threads: {
             select: {
@@ -250,7 +250,7 @@ export default new (class UserService {
                   ID: true,
                   username: true,
                   fullname: true,
-                  profilePicture: true,
+                  avatar: true,
                 },
               },
             },
@@ -265,7 +265,7 @@ export default new (class UserService {
                   ID: true,
                   username: true,
                   fullname: true,
-                  profilePicture: true,
+                  avatar: true,
                 },
               },
             },
@@ -430,7 +430,7 @@ export default new (class UserService {
           ID: true,
           fullname: true,
           username: true,
-          profilePicture: true,
+          avatar: true,
         },
       });
 
@@ -542,7 +542,7 @@ export default new (class UserService {
 
       const oldUserData = await this.UserRepository.findUnique({
         where: { ID: userId },
-        select: { profilePicture: true },
+        select: { avatar: true },
       });
 
       const cloudinaryUpload = await cloudinary.uploader.upload(image.path, {
@@ -553,18 +553,15 @@ export default new (class UserService {
 
       fs.unlinkSync(image.path);
 
-      if (oldUserData && oldUserData.profilePicture) {
-        const publicId = oldUserData.profilePicture
-          .split("/")
-          .pop()
-          ?.split(".")[0];
+      if (oldUserData && oldUserData.avatar) {
+        const publicId = oldUserData.avatar.split("/").pop()?.split(".")[0];
         await cloudinary.uploader.destroy(publicId as string);
       }
 
       const updateUser = await this.UserRepository.update({
         where: { ID: userId },
         data: {
-          profilePicture: profile_pictureURL,
+          avatar: profile_pictureURL,
         },
       });
 
@@ -597,7 +594,6 @@ export default new (class UserService {
       const body = req.body;
       const { error } = update.validate(body);
       if (error) return res.status(400).json({ message: error.message });
-      console.log(body);
 
       const image = req.file;
 
@@ -634,14 +630,14 @@ export default new (class UserService {
       // ==================== UPLOAD IMAGE ==================== //
       const oldUserData = await this.UserRepository.findUniqueOrThrow({
         where: { ID: userId },
-        select: { profilePicture: true },
+        select: { avatar: true },
       });
 
       let cloudinaryUpload: UploadApiResponse;
       let profilePictureURL: string = "";
       if (!image) {
         cloudinaryUpload = await cloudinary.uploader.upload(
-          oldUserData.profilePicture,
+          oldUserData.avatar,
           {
             folder: "circle",
           }
@@ -649,11 +645,8 @@ export default new (class UserService {
 
         profilePictureURL = cloudinaryUpload.secure_url;
 
-        if (oldUserData && oldUserData.profilePicture) {
-          const publicId = oldUserData.profilePicture
-            .split("/")
-            .pop()
-            ?.split(".")[0];
+        if (oldUserData && oldUserData.avatar) {
+          const publicId = oldUserData.avatar.split("/").pop()?.split(".")[0];
           await cloudinary.uploader.destroy(publicId as string);
         }
       } else {
@@ -665,11 +658,8 @@ export default new (class UserService {
 
         fs.unlinkSync(image.path);
 
-        if (oldUserData && oldUserData.profilePicture) {
-          const publicId = oldUserData.profilePicture
-            .split("/")
-            .pop()
-            ?.split(".")[0];
+        if (oldUserData && oldUserData.avatar) {
+          const publicId = oldUserData.avatar.split("/").pop()?.split(".")[0];
           await cloudinary.uploader.destroy(publicId as string);
         }
       }
@@ -677,7 +667,7 @@ export default new (class UserService {
       const updated = await this.UserRepository.update({
         where: { ID: userId },
         data: {
-          profilePicture: profilePictureURL,
+          avatar: profilePictureURL,
           password: hashPassword,
           username: username,
           fullname: fullname,

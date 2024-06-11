@@ -5,7 +5,7 @@ CREATE TABLE "User" (
     "fullname" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "profilePicture" TEXT NOT NULL,
+    "avatar" TEXT NOT NULL,
     "bio" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE "Follow" (
     "ID" TEXT NOT NULL,
     "followerID" TEXT NOT NULL,
     "followingID" TEXT NOT NULL,
-    "FolowedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "folowedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "isFollow" BOOLEAN DEFAULT false,
 
     CONSTRAINT "Follow_pkey" PRIMARY KEY ("ID")
@@ -29,6 +29,7 @@ CREATE TABLE "Thread" (
     "ID" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "image" TEXT[],
+    "isEdited" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userID" TEXT NOT NULL,
     "isLiked" BOOLEAN NOT NULL DEFAULT false,

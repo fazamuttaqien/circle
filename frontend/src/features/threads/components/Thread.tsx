@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Alert,
   AlertDescription,
@@ -22,6 +22,7 @@ import {
   ModalFooter,
   Button,
   IconButton,
+  InputGroup,
 } from "@chakra-ui/react";
 import moment from "moment";
 import Swal from "sweetalert2";
@@ -39,7 +40,6 @@ import { useAppSelectore } from "@/redux/store";
 import ThreadForm from "./ThreadForm";
 import { MdOutlineSystemUpdateAlt } from "react-icons/md";
 import { CloseIcon } from "@chakra-ui/icons";
-
 interface CustomFile extends File {
   preview: string;
 }
@@ -50,10 +50,9 @@ export default function Thread() {
     data: threads,
     isError,
     error,
-    // hasNextPage,
-    // fetchNextPage,
     isFetching,
     isFetchingNextPage,
+    refetch,
   } = useInfinityThreads();
 
   const { mutate } = usePostLike();
@@ -87,7 +86,6 @@ export default function Thread() {
   });
 
   const updateThread = () => {
-    // console.log(selectedThread);
     const threads: ThreadUpdateType = {
       content: selectedThread.content,
       image: image.map(({ file, preview }) => {
@@ -141,9 +139,19 @@ export default function Thread() {
     onOpen();
   };
 
+  useEffect(() => {
+    refetch();
+  }, []);
+
   return (
     <Fragment>
-      <Box flex={1} px={5} py={10} overflow={"auto"} className="hide-scroll">
+      <Box
+        flex={1}
+        px={5}
+        py={10}
+        overflow={"auto"}
+        className="hide-scroll scrollHide"
+      >
         <Text fontSize={"2xl"} mb={"10px"} ml={"15px"}>
           Home
         </Text>
@@ -175,7 +183,7 @@ export default function Thread() {
                             borderRadius="full"
                             boxSize="40px"
                             objectFit="cover"
-                            src={thread.user?.profilePicture}
+                            src={thread.user?.avatar}
                             alt={`${thread.user?.fullname}`}
                           />
                           <Box>
@@ -354,24 +362,10 @@ export default function Thread() {
                   </Fragment>
                 ))}
                 <Flex justifyContent={"center"}>
-                  {isFetching && isFetchingNextPage ? (
+                  {isFetching && isFetchingNextPage && (
                     <Box textAlign={"center"}>
                       <p>No More Threads</p>
                     </Box>
-                  ) : (
-                    <>
-                      {/* {hasNextPage && (
-                        <Button
-                          colorScheme="#04A51E"
-                          size="md"
-                          onClick={() => {
-                            fetchNextPage();
-                          }}
-                        >
-                          Load More
-                        </Button>
-                      )} */}
-                    </>
                   )}
                 </Flex>
               </Fragment>
@@ -395,17 +389,19 @@ export default function Thread() {
           <ModalBody pb={6}>
             <FormControl mt={4}>
               <FormLabel>Content</FormLabel>
-              <Input
-                type="text"
-                placeholder="Content"
-                value={selectedThread.content}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  setSelectedThread({
-                    ...selectedThread,
-                    content: event.target.value,
-                  })
-                }
-              />
+              <InputGroup>
+                <Input
+                  type="text"
+                  placeholder="Content"
+                  value={selectedThread.content}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setSelectedThread({
+                      ...selectedThread,
+                      content: event.target.value,
+                    })
+                  }
+                />{" "}
+              </InputGroup>
             </FormControl>
             <FormLabel mt={4}>Image</FormLabel>
             <Input

@@ -17,17 +17,7 @@ const initialState: initialStateT = {
   error: "",
 };
 
-// interface JWTPayload {
-//   id: string;
-// }
-
 const token = localStorage.getItem("token");
-// if (!token) {
-//   throw new Error("JWT token not found in localStorage.");
-// }
-// const decodedToken = token.split(".")[1];
-// const userData = JSON.parse(atob(decodedToken));
-// const idUser = userData?.User?.id;
 
 export const getProfile = createAsyncThunk(
   "profile",

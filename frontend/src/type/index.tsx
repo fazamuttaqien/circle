@@ -20,7 +20,7 @@ interface FillFollower {
   ID: string;
   username: string;
   fullname: string;
-  profilePicture: string;
+  avatar: string;
 }
 
 interface UserProfileType {
@@ -29,7 +29,7 @@ interface UserProfileType {
   fullname: string;
   email: string;
   password: null;
-  profilePicture: string;
+  avatar: string;
   bio: string;
   createdAt: string;
   updatedAt: string;
@@ -43,7 +43,7 @@ interface SearchUserType {
   fullname: string;
   email: string;
   password: null;
-  profilePicture: string;
+  avatar: string;
   bio: string | null;
   createdAt: string;
   updatedAt: string;
@@ -53,7 +53,7 @@ interface Suggested {
   ID: string;
   username: string;
   fullname: string;
-  profilePicture: string;
+  avatar: string;
 }
 
 interface EditProfileType {
@@ -103,7 +103,7 @@ interface ThreadHomeType {
     ID: string;
     username: string;
     fullname: string;
-    profilePicture: string;
+    avatar: string;
   };
   likes: ThreadLikeType[];
   replies: {
@@ -120,7 +120,7 @@ interface ThreadLikeType {
     ID: string;
     username: string;
     fullname: string;
-    profilePicture: string;
+    avatar: string;
   };
 }
 
@@ -136,6 +136,6 @@ interface ThreadReplyType {
     ID: string;
     username: string;
     fullname: string;
-    profilePicture: string;
+    avatar: string;
   };
 }

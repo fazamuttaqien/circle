@@ -1,7 +1,7 @@
 import { API } from "@/utils/api";
 import getError from "@/utils/getError";
+import { toastSuccess } from "@/utils/toast";
 import { useState, ChangeEvent } from "react";
-import { toast } from "react-toastify";
 
 export function useRegister() {
   const [form, setForm] = useState<Register>({
@@ -27,17 +27,8 @@ export function useRegister() {
       setIsLoading(true);
 
       const response = await API.post("register", form);
+      toastSuccess(response.data.message);
 
-      toast.success(response.data.message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
       setisError(false);
       seterror("");
       setisRegisterSuccess(true);

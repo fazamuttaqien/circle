@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
-import { useAppDispacth } from "../redux/store";
+import {
+  Routes,
+  Route,
+  BrowserRouter,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { Flex, Spinner } from "@chakra-ui/react";
+import { API } from "@/utils/api";
 import Main from "@/layout/Main";
 import HomePage from "@/pages/HomePage";
 import ReplyPage from "@/pages/ReplyPage";
@@ -10,14 +18,13 @@ import EditProfilePage from "@/pages/EditProfilePage";
 import RegisterPage from "@/pages/RegisterPage";
 import LoginPage from "@/pages/LoginPage";
 import { authCheckAsync } from "@/redux/slice/auth";
-import Auth from "@/layout/Auth";
 
 function Router() {
   // menandakan proses pengecekan sedang dijalankan
   const [checkAuthFinish, setCheckAuthFinish] = useState<boolean>(true);
   const token = localStorage.getItem("token");
 
-  const dispatch = useAppDispacth();
+  const dispatch = useAppDispatch();
 
   async function authCheck() {
     try {
@@ -62,94 +69,99 @@ function Router() {
 
   return (
     <>
-      {/* {checkAuthFinish && (
-        <Flex justifyContent={"center"} alignItems={"center"} h={"100vh"} w={"100vh"}>
-          <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" w={"70px"} h={"70px"} />
+      {checkAuthFinish && (
+        <Flex
+          justifyContent={"center"}
+          alignItems={"center"}
+          width={"100vw"}
+          height={"100vh"}
+        >
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            width={"70px"}
+            height={"70px"}
+          />
         </Flex>
-      )} */}
+      )}
+
       {!checkAuthFinish && (
         <BrowserRouter>
           <Routes>
-            <Route path="/">
-              <Route
-                index
-                element={
-                  <>
+            <Route path="/" element={<IsNotLogged />}>
+              <Route path="/">
+                <Route
+                  index
+                  element={
                     <Main>
                       <HomePage />
                     </Main>
-                  </>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/reply/:threadID">
-              <Route
-                index
-                element={
-                  <>
+              <Route path="/reply/:threadID">
+                <Route
+                  index
+                  element={
                     <Main>
                       <ReplyPage />
                     </Main>
-                  </>
-                }
-              />
-            </Route>
-            <Route path="/search">
-              <Route
-                index
-                element={
-                  <>
+                  }
+                />
+              </Route>
+
+              <Route path="/search">
+                <Route
+                  index
+                  element={
                     <Main>
                       <SearchPage />
                     </Main>
-                  </>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/profile/:userID">
-              <Route
-                index
-                element={
-                  <>
+              <Route path="/profile/:userID">
+                <Route
+                  index
+                  element={
                     <Main>
                       <ProfilePage />
                     </Main>
-                  </>
-                }
-              />
-            </Route>
+                  }
+                />
+              </Route>
 
-            <Route path="/edit-profile">
-              <Route
-                index
-                element={
-                  <>
+              <Route path="/profile/:userID">
+                <Route
+                  index
+                  element={
+                    <Main>
+                      <ProfilePage />
+                    </Main>
+                  }
+                />
+              </Route>
+
+              <Route path="/edit-profile">
+                <Route
+                  index
+                  element={
                     <Main>
                       <EditProfilePage />
                     </Main>
-                  </>
-                }
-              />
+                  }
+                />
+              </Route>
             </Route>
 
-            <Route
-              path="/register"
-              element={
-                <Auth>
-                  <RegisterPage />
-                </Auth>
-              }
-            ></Route>
-            <Route
-              path="/login"
-              element={
-                <Auth>
-                  <LoginPage />
-                </Auth>
-              }
-            ></Route>
+            <Route path="/" element={<IsLogin />}>
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
+            </Route>
           </Routes>
         </BrowserRouter>
       )}

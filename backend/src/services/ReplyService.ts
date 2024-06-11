@@ -76,7 +76,7 @@ export default new (class ReplyService {
               ID: true,
               fullname: true,
               username: true,
-              profilePicture: true,
+              avatar: true,
             },
           },
           threadID: true,

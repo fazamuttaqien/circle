@@ -16,7 +16,7 @@ import {
 import { Fragment, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useEditProfile } from "../hooks/useEditProfile";
-import { getProfile } from "@/redux/user/profileSlice";
+import { getProfile } from "@/redux/slice/profile";
 import { BsArrowLeft } from "react-icons/bs";
 
 export default function EditProfile() {
@@ -86,7 +86,7 @@ export default function EditProfile() {
                 />
               ) : (
                 <Image
-                  src={profile.data?.profilePicture}
+                  src={profile.data?.avatar}
                   alt={profile.data?.username}
                   borderRadius="50%"
                   w={70}

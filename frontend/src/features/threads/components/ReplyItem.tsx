@@ -73,8 +73,6 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
     onClose();
   };
 
-  console.log("REPLY", reply);
-
   return (
     <Fragment>
       <Flex gap={"15px"} border={"2px solid #262626"} p={"20px"} my={"15px"}>
@@ -82,7 +80,7 @@ export default function ReplyItem({ reply }: ReplyItemInterface) {
           borderRadius="full"
           boxSize="40px"
           objectFit="cover"
-          src={`${reply?.user?.profilePicture}`}
+          src={`${reply?.user?.avatar}`}
           alt={`Profile Picture`}
         />
         <Box>

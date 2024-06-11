@@ -1,6 +1,6 @@
 import { useAppDispacth, useAppSelectore } from "@/redux/store";
-import { getDetailUser } from "@/redux/user/detailUserSlice";
-import { getProfile } from "@/redux/user/profileSlice";
+import { getDetailUser } from "@/redux/slice/detailuser";
+import { getProfile } from "@/redux/slice/profile";
 import { API } from "@/utils/api";
 import getError from "@/utils/getError";
 import {
@@ -24,7 +24,7 @@ import {
 import { Fragment, useEffect } from "react";
 import { FiEdit3 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toastError } from "@/utils/toast";
 
 export default function Profile() {
   const params = useParams();
@@ -54,16 +54,7 @@ export default function Profile() {
       dispatch(getDetailUser(params.userID || ""));
       dispatch(getProfile());
     } catch (error) {
-      toast.error(getError(error), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      toastError(getError(error));
     }
   };
 
@@ -92,7 +83,7 @@ export default function Profile() {
                         alt="Green Gradient"
                         borderRadius={"10px"}
                         width={"100%"}
-                        height={"80px"}
+                        height={"200px"}
                         objectFit={"cover"}
                       />
                       <Image
@@ -102,9 +93,9 @@ export default function Profile() {
                         boxSize="75px"
                         objectFit="cover"
                         position={"absolute"}
-                        top={"40px"}
+                        top={"160px"}
                         left={"20px"}
-                        src={detailUser?.profilePicture}
+                        src={detailUser?.avatar}
                         alt={detailUser?.fullname}
                       />
                       {profile?.ID === detailUser?.ID && (
@@ -139,9 +130,7 @@ export default function Profile() {
                             right={"0px"}
                             onClick={followAndUnfollow}
                           >
-                            {detailUser?.follower
-                              .map((follower) => follower.ID)
-                              .includes(profile?.ID || "")
+                            {detailUser?.follower?.length ?? 0 > 0
                               ? "Unfollow"
                               : "Follow"}
                           </Button>
@@ -207,7 +196,7 @@ export default function Profile() {
                                           borderRadius="full"
                                           boxSize="45px"
                                           objectFit="cover"
-                                          src={follower.follower.profilePicture}
+                                          src={follower.follower.avatar}
                                           alt={follower.follower.fullname}
                                         />
                                       </Text>
@@ -277,9 +266,7 @@ export default function Profile() {
                                             borderRadius="full"
                                             boxSize="45px"
                                             objectFit="cover"
-                                            src={
-                                              following.following.profilePicture
-                                            }
+                                            src={following.following.avatar}
                                             alt={following.following.fullname}
                                           />
                                         </Text>

@@ -60,7 +60,7 @@ export default function Reply() {
                     borderRadius="full"
                     boxSize="40px"
                     objectFit="cover"
-                    src={`${thread?.data?.user?.profilePicture}`}
+                    src={`${thread?.data?.user?.avatar}`}
                     alt={`Profile Picture`}
                   />
                   <Box>

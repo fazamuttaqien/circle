@@ -14,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useAppDispacth, useAppSelectore } from "@/redux/store";
-import { getSuggested } from "@/redux/user/suggestedSlice";
+import { getSuggested } from "@/redux/slice/suggested";
 
 export default function Suggested() {
   const dispatch = useAppDispacth();
@@ -64,7 +64,7 @@ export default function Suggested() {
                                 borderRadius="full"
                                 boxSize="45px"
                                 objectFit="cover"
-                                src={suggested.profilePicture}
+                                src={suggested.avatar}
                                 alt={suggested.fullname}
                               />
                             </Text>

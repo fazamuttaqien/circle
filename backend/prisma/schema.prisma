@@ -15,20 +15,20 @@ datasource db {
 
 // user Model
 model User {
-  ID             String   @id @default(uuid())
-  username       String   @unique
-  fullname       String
-  email          String   @unique
-  password       String
-  profilePicture String
-  bio            String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  likes          Like[]
-  threads        Thread[]
-  replies        Reply[]
-  follower       Follow[] @relation(name: "Following")
-  following      Follow[] @relation(name: "Follower")
+  ID        String   @id @default(uuid())
+  username  String   @unique
+  fullname  String
+  email     String   @unique
+  password  String
+  avatar    String
+  bio       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  likes     Like[]
+  threads   Thread[]
+  replies   Reply[]
+  follower  Follow[] @relation(name: "Following")
+  following Follow[] @relation(name: "Follower")
 }
 
 model Follow {
@@ -42,10 +42,10 @@ model Follow {
 }
 
 model Thread {
-  ID       String   @id @default(uuid())
-  content  String
-  image    String[]
-  isEdited Boolean  @default(false)
+  ID        String   @id @default(uuid())
+  content   String
+  image     String[]
+  isEdited  Boolean  @default(false)
   createdAt DateTime @default(now())
   likes     Like[]
   replies   Reply[]

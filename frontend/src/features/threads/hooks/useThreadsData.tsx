@@ -1,12 +1,12 @@
 import { API } from "@/utils/api";
 import getError from "@/utils/getError";
+import { toastError } from "@/utils/toast";
 import {
   useQuery,
   useMutation,
   useQueryClient,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 
 const token = localStorage.getItem("token");
 
@@ -33,6 +33,7 @@ export const useInfinityThreads = () => {
       return undefined;
     },
     initialPageParam: 1,
+    enabled: true,
   });
 };
 
@@ -58,17 +59,7 @@ export const usePostThread = (reset: () => void) => {
       reset();
     },
     onError: (error) => {
-      toast.error(getError(error)),
-        {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        };
+      toastError(getError(error));
     },
   });
 };
@@ -93,17 +84,7 @@ export const usePostLike = () => {
       });
     },
     onError: (error) => {
-      toast.error(getError(error)),
-        {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        };
+      toastError(getError(error));
     },
   });
 };
@@ -128,17 +109,7 @@ export const useDeleteThread = () => {
       });
     },
     onError: (error) => {
-      toast.error(getError(error)),
-        {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        };
+      toastError(getError(error));
     },
   });
 };
@@ -191,16 +162,7 @@ export const useUpdateThread = (reset: () => void) => {
       reset();
     },
     onError: (error) => {
-      toast.error(getError(error), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      toastError(getError(error));
     },
   });
 };
@@ -233,16 +195,7 @@ export const usePostReply = (reset: () => void) => {
       reset();
     },
     onError: (error) => {
-      toast.error(getError(error), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      toastError(getError(error));
     },
   });
 };
@@ -267,17 +220,7 @@ export const useDeleteReply = () => {
       });
     },
     onError: (error) => {
-      toast.error(getError(error)),
-        {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        };
+      toastError(getError(error));
     },
   });
 };
@@ -318,16 +261,7 @@ export const useUpdateReply = (reset: () => void) => {
       reset();
     },
     onError: (error) => {
-      toast.error(getError(error), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      toastError(getError(error));
     },
   });
 };
@@ -371,16 +305,7 @@ export const usePutProfile = (reset: () => void) => {
       reset();
     },
     onError: (error) => {
-      toast.error(getError(error), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      toastError(getError(error));
     },
   });
 };

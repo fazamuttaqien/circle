@@ -56,7 +56,10 @@ export default new (class FollowService {
             ID: exitingFollow.ID,
           },
         });
-        return res.status(200).json({ message: "You unfollow this user" });
+
+        return res.status(200).json({
+          message: "Unfollow user success",
+        });
       }
 
       const followUser = await this.UserFollowingRepository.create({
@@ -74,7 +77,7 @@ export default new (class FollowService {
               ID: true,
               username: true,
               fullname: true,
-              profilePicture: true,
+              avatar: true,
             },
           },
           following: {
@@ -82,7 +85,7 @@ export default new (class FollowService {
               ID: true,
               username: true,
               fullname: true,
-              profilePicture: true,
+              avatar: true,
             },
           },
           folowedAt: true,

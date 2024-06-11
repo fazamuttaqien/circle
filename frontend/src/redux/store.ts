@@ -4,13 +4,15 @@ import { useSelector, TypedUseSelectorHook, useDispatch } from "react-redux";
 // useDispacth is to specify selecting a specific part of the redux state
 
 import { configureStore } from "@reduxjs/toolkit";
-import detailUserSlice from "./user/detailUserSlice";
-import profileSlice from "./user/profileSlice";
-import suggestedSlice from "./user/suggestedSlice";
+import detailUserSlice from "./slice/detailuser";
+import profileSlice from "./slice/profile";
+import suggestedSlice from "./slice/suggested";
+import auth from "./slice/auth";
 // this is specifically for creating a store in Redux whose contents are taken from the slice
 
 const store = configureStore({
   reducer: {
+    auth: auth,
     detailUser: detailUserSlice,
     profile: profileSlice,
     suggested: suggestedSlice,

@@ -1,8 +1,8 @@
 import { useAppSelectore } from "@/redux/store";
 import { API } from "@/utils/api";
 import getError from "@/utils/getError";
+import { toastSuccess } from "@/utils/toast";
 import { useState, ChangeEvent, useEffect } from "react";
-import { toast } from "react-toastify";
 
 export function useEditProfile() {
   const profile = useAppSelectore((state) => state.profile);
@@ -67,17 +67,8 @@ export function useEditProfile() {
           "Content-Type": "multipart/form-data",
         },
       });
+      toastSuccess(response.data.message);
 
-      toast.success(response.data.message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
       setIsError(false);
       setError("");
       setIsEditProfileSuccess(true);

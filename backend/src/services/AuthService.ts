@@ -46,7 +46,7 @@ export default new (class AuthService {
           fullname: body.fullname,
           email: body.email,
           password: hashPassword,
-          profilePicture: imageURL,
+          avatar: imageURL,
           bio: "",
           createdAt: new Date(),
         },
@@ -87,7 +87,7 @@ export default new (class AuthService {
         password: isMailRegisted.password,
         username: isMailRegisted.username,
         fullname: isMailRegisted.fullname,
-        profilePicture: isMailRegisted.profilePicture,
+        avatar: isMailRegisted.avatar,
         bio: isMailRegisted.bio,
       };
 

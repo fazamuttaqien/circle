@@ -12,8 +12,10 @@ import {
 } from "react-icons/ri";
 import { jwtDecode } from "jwt-decode";
 import { API } from "@/utils/api";
-import { toast } from "react-toastify";
 import getError from "@/utils/getError";
+import { toastError } from "@/utils/toast";
+import { useAppDispacth } from "@/redux/store";
+import { LOGOUT } from "@/redux/slice/auth";
 
 interface SidebarDrawerInterface {
   closeDrawer: () => void;
@@ -28,8 +30,10 @@ interface JwtPayload {
 }
 
 export default function Sidebar(props: SidebarDrawerInterface) {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispacth();
+
   const token = localStorage.getItem("token");
   let idToken: string = "";
 
@@ -50,20 +54,10 @@ export default function Sidebar(props: SidebarDrawerInterface) {
         },
       });
 
-      localStorage.clear();
-      window.location.reload();
+      localStorage.removeItem("token");
       navigate("/login");
     } catch (error) {
-      toast.error(getError(error), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      toastError(getError(error));
     }
   };
 
@@ -172,8 +166,8 @@ export default function Sidebar(props: SidebarDrawerInterface) {
                   confirmButtonText: "Yes, Logout!",
                 }).then((result) => {
                   if (result.isConfirmed) {
-                    localStorage.clear();
-                    window.location.reload();
+                    dispatch(LOGOUT());
+                    localStorage.removeItem("token");
                     navigate("/login");
                   }
                 });

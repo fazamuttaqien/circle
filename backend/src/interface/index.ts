@@ -24,7 +24,7 @@ interface ThreadRedis {
     username: string;
     fullname: string;
     email: string;
-    profilePicture: string;
+    avatar: string;
     bio: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -36,7 +36,7 @@ interface UserRedis {
   username: string;
   fullname: string;
   email: string;
-  profilePicture: string;
+  avatar: string;
   bio: string;
   likes: {
     ID: string;
@@ -65,7 +65,7 @@ interface UserRedis {
       ID: string;
       username: string;
       fullname: string;
-      profilePicture: string;
+      avatar: string;
     };
   }[];
   following: {
@@ -76,7 +76,7 @@ interface UserRedis {
       ID: string;
       username: string;
       fullname: string;
-      profilePicture: string;
+      avatar: string;
     };
   }[];
 }
@@ -86,7 +86,7 @@ interface UserNameRedis {
   username: string;
   fullname: string;
   email: string;
-  profilePicture: string;
+  avatar: string;
   bio: string;
   createdAt?: Date | null;
   updatedAt?: Date | null;

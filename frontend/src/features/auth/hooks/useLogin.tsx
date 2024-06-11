@@ -1,59 +1,51 @@
+import {
+  IFormInput,
+  useLoginValidation,
+} from "@/lib/validation/useLoginValidation";
 import { API } from "@/utils/api";
 import getError from "@/utils/getError";
-import { useState, ChangeEvent } from "react";
-import { toast } from "react-toastify";
+import { toastSuccess } from "@/utils/toast";
+import { useState } from "react";
+import { SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 export function useLogin() {
-  const [form, setForm] = useState<Login>({
-    email: "",
-    password: "",
-  });
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setisError] = useState<boolean>(false);
   const [error, seterror] = useState<string>("");
   const [isLoginSuccess, setisLoginSuccess] = useState<boolean>(false);
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
-  }
+  const navigate = useNavigate();
 
-  async function handleLogin() {
+  const { control, reset, handleSubmit, getValues } = useLoginValidation();
+
+  const handleLogin: SubmitHandler<IFormInput> = async () => {
     try {
       setIsLoading(true);
 
-      const response = await API.post("login", form);
+      const { email, password } = getValues();
+      const response = await API.post("login", { email, password });
 
-      toast.success(response.data.message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-
+      toastSuccess(response.data.message);
       localStorage.setItem("token", response.data.token);
 
       setisError(false);
       seterror("");
       setisLoginSuccess(true);
+
+      navigate("/");
     } catch (error: any) {
       setisError(true);
       seterror(getError(error));
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return {
-    form,
-    handleChange,
+    control,
+    reset,
+    handleSubmit,
     handleLogin,
     isLoading,
     isError,

@@ -33,7 +33,7 @@ export default function Register() {
     if (isRegisterSuccess) {
       navigate("/login");
     }
-  }, [isRegisterSuccess]);
+  }, []);
 
   return (
     <Fragment>
@@ -49,9 +49,6 @@ export default function Register() {
           >
             circle
           </Heading>
-          {/* <Text fontSize={"xl"} mb={3} ml={3}>
-            Create account Circle
-          </Text> */}
           {isError && (
             <Alert status="error" bg={"#FF6969"} mb={3} borderRadius={5}>
               <AlertIcon color={"white"} />
